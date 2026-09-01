@@ -122,22 +122,22 @@ window.SITE = {
       heroSound: true,
       subsections: [
         {
-          slug: "iqbbq-design", title: "IQ BBQ Design", mediaKey: "iqbbq-50th/iqbbq-design",
+          slug: "iqbbq-design", title: "Design", mediaKey: "iqbbq-50th/iqbbq-design",
           copy: "To help align external partners across digital and IRL, we created a flexible guide for The 50th and by extension, our IQ/BBQ. We wanted to show hip-hop's duality with elements that felt technical and freeform. We used abstracted references to record ephemera to nod to the genre's roots. Allusions to misprints and drafts show how even things that scale to the masses feel personal and tactile. The tone needed to strike a balance of reverent and celebratory, yet approachable.",
           credits: ["Role: Creative Direction", "Sr. Designer: Alex Cheung"]
         },
         {
-          slug: "iqbbq-promotion", title: "IQ BBQ Promotion", mediaKey: "iqbbq-50th/iqbbq-promotion",
+          slug: "iqbbq-promotion", title: "Promotion", mediaKey: "iqbbq-50th/iqbbq-promotion",
           copy: "Our teams at Genius worked together to create a rollout strategy for the line-up and tickets. Within six hours, we filled up our 6k RSVPs on DICE, and had over 42 article mentions over time. We also used our artists and an exclusive merch collab to extend our reach.",
           credits: ["Role: Creative Direction + Design", "Sr. Designer: Alex Cheung", "Merch Design: The Good Company"]
         },
         {
-          slug: "iqbbq-event", title: "IQ BBQ The Event", mediaKey: "iqbbq-50th/iqbbq-event",
+          slug: "iqbbq-event", title: "The Event", mediaKey: "iqbbq-50th/iqbbq-event",
           copy: "Using our design system, we brought the celebration of 50 years of lyrics to life. Spatially, we borrowed cues from a backyard or stoop kickback–a nod to hip-hop's birthplace, and the event's namesake. We also created a trivia experience so guests could test their hip-hop knowledge.",
           credits: ["Role: Creative Direction", "Sr. Designer: Alex Cheung", "Product Designer: Sam May", "Experiential Partner: Superfly"]
         },
         {
-          slug: "iqbbq-brand-partners", title: "IQ BBQ Brand Partners", mediaKey: "iqbbq-50th/iqbbq-brand-partners",
+          slug: "iqbbq-brand-partners", title: "Brand Partners", mediaKey: "iqbbq-50th/iqbbq-brand-partners",
           copy: "Rabanne: The So Fresh, So Clean Shop offered guests free shoe shines and shape-ups.\n\nShowtime's THE CHI: The Rap Cafeteria featured tables that represented different eras and scenes in hip-hop.\n\nINFINITI: Partnered with artist Jade Purple Brown to pay homage to women in hip-hop.\n\nPatrón EL ALTO: Created a premium VIP lounge with a focus on cocktails.",
           credits: ["Role: Creative Direction", "Experiential Partner: Superfly"]
         },

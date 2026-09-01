@@ -108,7 +108,7 @@
         }
 
         if(sub.embeds){
-          subBlock.appendChild(buildEmbedGrid(sub.embedUrls));
+          subBlock.appendChild(buildEmbedGallery(sub.embedUrls, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]));
         } else {
           var items = mediaFor(sub.mediaKey);
           subBlock.appendChild(buildGallery(items, sub.mediaKey, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]));
@@ -143,6 +143,52 @@
     }
   }
 
+  // Shared prev/next chrome for any horizontally-scrolling gallery row.
+  // Right arrow is visible by default whenever there's more than one item (no
+  // fragile "wait until we can prove it" logic); left arrow stays hidden until
+  // the user has actually scrolled. Visibility only recomputes on real scroll/
+  // resize events, once layout is guaranteed settled.
+  function attachGalleryArrows(wrap, gallery, itemSelector){
+    var items = gallery.querySelectorAll(itemSelector);
+    if(items.length <= 1) return;
+
+    var prev = el("button","gallery-arrow gallery-prev is-hidden","‹");
+    var next = el("button","gallery-arrow gallery-next","›");
+
+    function cellScrollLeft(cell){
+      return cell.getBoundingClientRect().left - gallery.getBoundingClientRect().left + gallery.scrollLeft;
+    }
+    function scrollToAdjacent(dir){
+      var cells = Array.prototype.slice.call(gallery.querySelectorAll(itemSelector));
+      var cur = gallery.scrollLeft;
+      var target = null;
+      if(dir > 0){
+        for(var i=0;i<cells.length;i++){
+          var l = cellScrollLeft(cells[i]);
+          if(l > cur + 10){ target = l; break; }
+        }
+      } else {
+        for(var i=cells.length-1;i>=0;i--){
+          var l = cellScrollLeft(cells[i]);
+          if(l < cur - 10){ target = l; break; }
+        }
+      }
+      if(target !== null) gallery.scrollTo({left: target, behavior:"smooth"});
+    }
+    prev.addEventListener("click", function(){ scrollToAdjacent(-1); });
+    next.addEventListener("click", function(){ scrollToAdjacent(1); });
+
+    function updateArrowVisibility(){
+      var maxScroll = gallery.scrollWidth - gallery.clientWidth;
+      prev.classList.toggle("is-hidden", gallery.scrollLeft <= 4);
+      if(maxScroll > 8){ next.classList.toggle("is-hidden", gallery.scrollLeft >= maxScroll - 4); }
+    }
+    gallery.addEventListener("scroll", function(){ requestAnimationFrame(updateArrowVisibility); }, {passive:true});
+    window.addEventListener("resize", updateArrowVisibility);
+
+    wrap.appendChild(prev); wrap.appendChild(next);
+  }
+
   function buildGallery(items, key, accent){
     var wrap = el("div","gallery-wrap");
     wrap.style.setProperty("--nav-accent", accent || "#543923");
@@ -170,74 +216,31 @@
       gallery.appendChild(cell);
     });
     wrap.appendChild(gallery);
-
-    if(items.length > 1){
-      var prev = el("button","gallery-arrow gallery-prev is-hidden","‹");
-      var next = el("button","gallery-arrow gallery-next","›");
-
-      function cellScrollLeft(cell){
-        return cell.getBoundingClientRect().left - gallery.getBoundingClientRect().left + gallery.scrollLeft;
-      }
-      function scrollToAdjacent(dir){
-        var cells = Array.prototype.slice.call(gallery.querySelectorAll(".gallery-item"));
-        var cur = gallery.scrollLeft;
-        var target = null;
-        if(dir > 0){
-          for(var i=0;i<cells.length;i++){
-            var l = cellScrollLeft(cells[i]);
-            if(l > cur + 10){ target = l; break; }
-          }
-        } else {
-          for(var i=cells.length-1;i>=0;i--){
-            var l = cellScrollLeft(cells[i]);
-            if(l < cur - 10){ target = l; break; }
-          }
-        }
-        if(target !== null) gallery.scrollTo({left: target, behavior:"smooth"});
-      }
-      prev.addEventListener("click", function(){ scrollToAdjacent(-1); });
-      next.addEventListener("click", function(){ scrollToAdjacent(1); });
-
-      function updateArrowVisibility(){
-        var maxScroll = gallery.scrollWidth - gallery.clientWidth;
-        prev.classList.toggle("is-hidden", gallery.scrollLeft <= 4);
-        next.classList.toggle("is-hidden", gallery.scrollLeft >= maxScroll - 4 || maxScroll <= 0);
-      }
-      gallery.addEventListener("scroll", function(){ requestAnimationFrame(updateArrowVisibility); }, {passive:true});
-      window.addEventListener("resize", updateArrowVisibility);
-
-      // recalc as media actually finishes loading (layout width isn't final until then)
-      gallery.querySelectorAll("img, video").forEach(function(m){
-        if(m.tagName === "IMG"){
-          if(m.complete){ updateArrowVisibility(); } else { m.addEventListener("load", updateArrowVisibility); }
-        } else {
-          m.addEventListener("loadedmetadata", updateArrowVisibility);
-        }
-      });
-      if(document.fonts && document.fonts.ready){ document.fonts.ready.then(updateArrowVisibility); }
-      [100, 400, 1000, 2500].forEach(function(t){ setTimeout(updateArrowVisibility, t); });
-
-      wrap.appendChild(prev); wrap.appendChild(next);
-    }
+    attachGalleryArrows(wrap, gallery, ".gallery-item");
 
     galleries.push(gallery);
     return wrap;
   }
 
-  function buildEmbedGrid(urls){
-    var grid = el("div","embed-grid");
+  function buildEmbedGallery(urls, accent){
+    var wrap = el("div","gallery-wrap");
+    wrap.style.setProperty("--nav-accent", accent || "#543923");
+
+    var gallery = el("div","gallery gallery-embeds");
     urls.forEach(function(u){
       if(!u || u.trim() === "https://www.instagram.com/") return;
-      var cell = el("div","embed-cell");
+      var cell = el("div","gallery-item embed-item");
       var bq = document.createElement("blockquote");
       bq.className = "instagram-media";
       bq.setAttribute("data-instgrm-permalink", u);
       bq.setAttribute("data-instgrm-version","14");
       cell.appendChild(bq);
-      grid.appendChild(cell);
+      gallery.appendChild(cell);
     });
+    wrap.appendChild(gallery);
+    attachGalleryArrows(wrap, gallery, ".embed-item");
     setTimeout(loadInstagramEmbeds, 50);
-    return grid;
+    return wrap;
   }
 
   var igScriptLoaded = false;
@@ -402,15 +405,15 @@
 
   function setActiveNav(sectionSlug, subSlug){
     navList.querySelectorAll(".nav-section-title.active").forEach(function(n){ n.classList.remove("active"); });
-    navList.querySelectorAll(".nav-sub-item.active").forEach(function(n){ n.classList.remove("active"); n.style.color = ""; });
+    navList.querySelectorAll(".nav-sub-item.active").forEach(function(n){ n.classList.remove("active"); n.style.borderBottomColor = ""; });
 
     var titleEl = navList.querySelector('[data-target="sec-' + sectionSlug + '"]');
     if(subSlug){
-      // underline moves down to the subsection; section header keeps its resting color, no underline
+      // underline moves down to the subsection; text stays brown, only the underline takes the section's color
       var subEl = navList.querySelector('[data-target="sub-' + sectionSlug + '-' + subSlug + '"]');
       if(subEl){
         subEl.classList.add("active");
-        subEl.style.color = SECTION_HEX_BY_SLUG[sectionSlug] || "";
+        subEl.style.borderBottomColor = SECTION_HEX_BY_SLUG[sectionSlug] || "";
       }
     } else if(titleEl){
       titleEl.classList.add("active");
