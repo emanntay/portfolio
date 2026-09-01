@@ -9,7 +9,6 @@
   --purple: #b573bc;
   --nav-w: 25%;
   --nav-min: 300px;
-  --gap: 1.5rem;
   --serif-head: "Syne", sans-serif;
   --body: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -34,57 +33,62 @@ a{color:inherit;}
   position: fixed;
   left:0; top:0; bottom:0;
   width: max(var(--nav-min), var(--nav-w));
-  background: var(--brown);
-  color: #fbf6ea;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  padding: 1.6rem 1.6rem;
+  background: var(--bg);
+  color: var(--ink);
+  border-right: 1px solid rgba(84,57,35,0.14);
+  display:block;
+  padding: 1.5rem 1.5rem 1.5rem;
   z-index: 40;
 }
 .corner{display:flex;align-items:center;}
-.corner-tl, .corner-tr{position:absolute; top:1.6rem;}
-.corner-tl{left:1.6rem;}
-.corner-tr{right:1.6rem;}
-.corner-bl, .corner-br{position:absolute; bottom:1.6rem;}
-.corner-bl{left:1.6rem;}
-.corner-br{right:1.6rem; width:1px; height:1px;}
+.corner-tl{position:absolute; top:1.5rem; left:1.5rem;}
+.corner-bl{position:absolute; bottom:1.4rem; left:1.5rem; right:1.5rem;}
 
 .site-name{
   font-family: var(--serif-head);
   font-weight: 800;
-  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
   letter-spacing: 0.01em;
+  color: var(--brown);
   cursor: default;
 }
-.site-name.is-link{cursor:pointer;}
-.site-name.is-link:hover{color: var(--chartreuse);}
 
+/* About: fixed to the whole page, top right */
+.about-fixed{
+  position: fixed;
+  top: 1.5rem; right: 1.7rem;
+  z-index: 55;
+}
 .about-btn{
   font-family: var(--serif-head);
   font-weight: 800;
-  font-size: clamp(0.85rem, 1.3vw, 1rem);
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  transition: color .2s ease;
+  color: var(--brown);
+  padding-bottom: 3px;
+  border-bottom: 1.5px solid rgba(84,57,35,0.4);
+  transition: color .2s ease, border-color .2s ease;
 }
-.about-btn:hover{color: var(--chartreuse);}
+.about-btn:hover{ color: var(--red); border-color: var(--red); }
 
 .nav-list{
-  margin-top: 4.5rem;
+  margin-top: 3.4rem;
   overflow-y:auto;
-  padding-bottom: 4rem;
-  flex:1;
+  max-height: calc(100vh - 7.5rem);
+  padding-bottom: 1rem;
 }
 .nav-list::-webkit-scrollbar{width:0;}
 
 .nav-section{
-  margin-bottom: 0.35rem;
+  margin-bottom: 0;
   opacity:0;
-  transform: translateY(10px);
+  transform: translateY(8px);
+  border-top: 1px solid rgba(84,57,35,0.14);
 }
+.nav-section:last-child{ border-bottom: 1px solid rgba(84,57,35,0.14); }
 .nav-section.unfolded{
-  animation: unfold .55s cubic-bezier(.2,.8,.2,1) forwards;
+  animation: unfold .5s cubic-bezier(.2,.8,.2,1) forwards;
 }
 @keyframes unfold{
   to{ opacity:1; transform:translateY(0); }
@@ -94,43 +98,63 @@ a{color:inherit;}
   display:block;
   width:100%;
   text-align:left;
-  font-family: var(--serif-head);
-  font-weight: 800;
-  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
-  padding: 0.55rem 0;
-  color: #fbf6ea;
-  border-top: 1px solid rgba(251,246,234,0.18);
-  transition: color .2s ease;
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  padding: 0.42rem 0;
+  transition: opacity .2s ease;
 }
-.nav-section:first-child .nav-section-title{border-top:none;}
-.nav-section-title:hover{color: var(--chartreuse);}
-.nav-section-title.active{color: var(--chartreuse);}
+.nav-section-title:hover{ opacity:0.65; }
+.nav-section-title.active{ text-decoration: underline; text-underline-offset: 3px; }
 
 .nav-sub-list{
   list-style:none;
-  margin:0; padding: 0 0 0.5rem 0.9rem;
+  margin:0; padding: 0 0 0.4rem 0;
 }
 .nav-sub-item{
-  font-size: 0.86rem;
-  padding: 0.28rem 0;
-  color: rgba(251,246,234,0.72);
+  font-size: 0.82rem;
+  font-weight: 400;
+  padding: 0.22rem 0;
+  color: var(--brown);
   cursor:pointer;
-  transition: color .2s ease, padding-left .2s ease;
+  transition: opacity .2s ease, padding-left .2s ease;
 }
 .nav-sub-item:hover, .nav-sub-item.active{
-  color: var(--chartreuse);
-  padding-left: 0.3rem;
+  opacity: 0.6;
 }
 
+/* palette cycle for section headers, assigned via JS */
+.accent-red{ color: var(--red); }
+.accent-chartreuse{ color: #9aad3f; } /* darkened for legibility on off-white */
+.accent-purple{ color: var(--purple); }
+
+/* ---------- WIDGET ---------- */
 .widget{
-  font-size: 0.68rem;
-  letter-spacing:0.03em;
-  text-transform: uppercase;
-  color: rgba(251,246,234,0.55);
-  line-height:1.6;
-  white-space: nowrap;
+  display:flex;
+  align-items:center;
+  gap: 0.65rem;
 }
-.widget .w-loc{color: var(--purple);}
+.widget-clock{
+  flex: 0 0 auto;
+  width: 40px; height:40px;
+}
+.widget-clock circle.face{ fill: var(--bg); stroke: var(--brown); stroke-width: 1.4; }
+.widget-clock line{ stroke: var(--brown); stroke-linecap: round; }
+.widget-clock line.hand-min{ stroke-width: 1.6; }
+.widget-clock line.hand-hr{ stroke-width: 2.2; }
+.widget-clock circle.pin{ fill: var(--brown); }
+.widget-clock .tick{ stroke: rgba(84,57,35,0.35); stroke-width: 1; }
+
+.widget-text{
+  font-size: 0.66rem;
+  letter-spacing:0.02em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height:1.5;
+}
+.widget-text .w-emoji{ font-size: 0.95rem; margin-right:0.15rem; }
+.widget-text .w-loc{color: var(--purple); display:block;}
 
 /* ---------- RAIL / CONTENT ---------- */
 .rail{
@@ -205,7 +229,7 @@ a{color:inherit;}
   margin: 0 0 0.9rem 0;
 }
 .section-intro{
-  font-size: 1rem;
+  font-size: 0.92rem;
   line-height:1.6;
   color: var(--ink-soft);
   max-width: 640px;
@@ -227,27 +251,29 @@ a{color:inherit;}
   margin: 0 0 0.6rem 0;
 }
 .project-copy{
-  font-size: 0.95rem;
-  line-height:1.65;
+  font-size: 0.76rem;
+  line-height:1.6;
   color: var(--ink-soft);
-  max-width: 620px;
+  max-width: 560px;
   white-space: pre-line;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.8rem;
 }
 .project-credits{
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   letter-spacing:0.02em;
   color: rgba(28,26,23,0.5);
   line-height:1.6;
   margin-bottom:1.2rem;
 }
 
-/* ---------- GALLERY ---------- */
+/* ---------- GALLERY (true-size, uncropped) ---------- */
 .gallery-wrap{ position:relative; }
 .gallery{
   display:flex;
-  gap: 0.9rem;
+  align-items:flex-end;
+  gap: 1rem;
   overflow-x:auto;
+  overflow-y: hidden;
   scroll-snap-type: x proximity;
   padding-bottom: 0.4rem;
   scrollbar-width: none;
@@ -255,17 +281,18 @@ a{color:inherit;}
 .gallery::-webkit-scrollbar{display:none;}
 .gallery-item{
   flex: 0 0 auto;
-  width: min(340px, 62vw);
-  height: 420px;
-  border-radius: 6px;
+  height: 460px;
+  max-width: 80vw;
+  border-radius: 4px;
   overflow:hidden;
-  background: #e9e3d4;
+  background: transparent;
   scroll-snap-align: start;
   cursor: pointer;
   position:relative;
 }
 .gallery-item img, .gallery-item video{
-  width:100%; height:100%; object-fit:cover;
+  height:100%; width:auto; max-width:80vw;
+  object-fit: contain;
 }
 .gallery-item .sound-badge{
   position:absolute; right:8px; bottom:8px;
@@ -277,13 +304,15 @@ a{color:inherit;}
 .gallery-arrow{
   position:absolute; top:50%; transform:translateY(-50%);
   width: 42px; height:42px; border-radius:50%;
-  background: var(--brown); color:#fbf6ea;
+  background: var(--nav-accent, var(--brown));
+  color: var(--ink);
   display:flex; align-items:center; justify-content:center;
   font-size:1.3rem;
   z-index:5;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: background .2s ease, color .2s ease;
 }
-.gallery-arrow:hover{background: var(--red);}
+.gallery-arrow:hover{ background: var(--brown); color:#fbf6ea; }
 .gallery-prev{left:-14px;}
 .gallery-next{right:-14px;}
 
@@ -353,6 +382,7 @@ a{color:inherit;}
 .lightbox-content{ max-width:92vw; max-height:88vh; }
 .lightbox-content img, .lightbox-content video{
   max-width:92vw; max-height:88vh; width:auto; height:auto; margin:0 auto; border-radius:4px;
+  object-fit: contain;
 }
 .lightbox-content iframe{ width:min(500px,92vw); height:80vh; border:0; }
 .lightbox-close{ position:absolute; top:1.4rem; right:1.6rem; color:#fbf6ea; font-size:2rem; }
@@ -386,6 +416,6 @@ a{color:inherit;}
   }
   .nav.open{ transform: translateX(0); }
   .rail{ margin-left:0; width:100%; }
-  .corner-tr{ right: 4.4rem; }
+  .about-fixed{ right: 4.4rem; }
   .gallery-item{ height: 320px; }
 }

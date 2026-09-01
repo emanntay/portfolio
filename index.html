@@ -15,14 +15,28 @@
     <span></span><span></span><span></span>
   </button>
 
+  <div class="about-fixed"><button id="aboutBtn" class="about-btn">About</button></div>
+
   <nav id="nav" class="nav">
     <div class="corner corner-tl"><span id="siteName" class="site-name">Emily Taylor</span></div>
-    <div class="corner corner-tr"><button id="aboutBtn" class="about-btn">About</button></div>
 
     <div id="navList" class="nav-list"></div>
 
-    <div class="corner corner-bl"><div id="widget" class="widget"></div></div>
-    <div class="corner corner-br"></div>
+    <div class="corner corner-bl">
+      <div id="widget" class="widget">
+        <svg class="widget-clock" id="clockFace" viewBox="0 0 40 40">
+          <circle class="face" cx="20" cy="20" r="18.5"></circle>
+          <line class="tick" x1="20" y1="3" x2="20" y2="5.5"></line>
+          <line class="tick" x1="20" y1="34.5" x2="20" y2="37"></line>
+          <line class="tick" x1="3" y1="20" x2="5.5" y2="20"></line>
+          <line class="tick" x1="34.5" y1="20" x2="37" y2="20"></line>
+          <line id="handHr" class="hand-hr" x1="20" y1="20" x2="20" y2="12"></line>
+          <line id="handMin" class="hand-min" x1="20" y1="20" x2="20" y2="7"></line>
+          <circle class="pin" cx="20" cy="20" r="1.6"></circle>
+        </svg>
+        <div id="widgetText" class="widget-text"></div>
+      </div>
+    </div>
   </nav>
 
   <main id="rail" class="rail">

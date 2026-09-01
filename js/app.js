@@ -2,23 +2,27 @@
   "use strict";
   var SITE = window.SITE;
   var MANIFEST = window.MANIFEST || {};
+  var ACCENTS = ["accent-red","accent-chartreuse","accent-purple"];
+  var ACCENT_HEX = ["#e81c1c","#dcff5f","#b573bc"];
 
   var navList = document.getElementById("navList");
   var contentEl = document.getElementById("content");
   var landingEl = document.getElementById("landing");
-  var siteNameEl = document.getElementById("siteName");
   var aboutBtn = document.getElementById("aboutBtn");
   var aboutModal = document.getElementById("aboutModal");
   var aboutBody = document.getElementById("aboutBody");
   var hamburger = document.getElementById("hamburger");
   var navEl = document.getElementById("nav");
-  var widgetEl = document.getElementById("widget");
+  var widgetText = document.getElementById("widgetText");
+  var handHr = document.getElementById("handHr");
+  var handMin = document.getElementById("handMin");
   var lightbox = document.getElementById("lightbox");
   var lightboxContent = document.getElementById("lightboxContent");
 
   var hasRevealed = false;
   var currentGalleryItems = null;
   var currentGalleryIndex = 0;
+  var galleryColorCounter = 0;
 
   /* ---------- helpers ---------- */
   function mediaFor(key){ return MANIFEST[key] || []; }
@@ -31,9 +35,9 @@
 
   /* ---------- NAV RENDER ---------- */
   function renderNav(){
-    SITE.sections.forEach(function(sec){
+    SITE.sections.forEach(function(sec, si){
       var wrap = el("div","nav-section");
-      var title = el("button","nav-section-title", sec.title);
+      var title = el("button","nav-section-title " + ACCENTS[si % ACCENTS.length], sec.title);
       title.dataset.target = "sec-" + sec.slug;
       wrap.appendChild(title);
 
@@ -54,10 +58,9 @@
       if(window.innerWidth <= 860) closeMobileNav();
     });
 
-    // staggered unfold
     var groups = navList.querySelectorAll(".nav-section");
     groups.forEach(function(g, i){
-      setTimeout(function(){ g.classList.add("unfolded"); }, 90 + i * 110);
+      setTimeout(function(){ g.classList.add("unfolded"); }, 70 + i * 90);
     });
   }
 
@@ -140,6 +143,10 @@
 
   function buildGallery(items, key){
     var wrap = el("div","gallery-wrap");
+    var accent = ACCENT_HEX[galleryColorCounter % ACCENT_HEX.length];
+    galleryColorCounter++;
+    wrap.style.setProperty("--nav-accent", accent);
+
     var gallery = el("div","gallery");
     gallery.dataset.key = key;
 
@@ -275,36 +282,48 @@
     hamburger.setAttribute("aria-expanded", open ? "true":"false");
   });
 
-  /* ---------- WIDGET: time / date / weather ---------- */
+  /* ---------- WIDGET: analog clock + weather emoji ---------- */
   function startWidget(){
     function tick(){
       var now = new Date();
-      var timeStr = now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",timeZone:"America/New_York"});
+      var parts = new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"numeric",hour12:false,timeZone:"America/New_York"}).formatToParts(now);
+      var h = 0, m = 0;
+      parts.forEach(function(p){ if(p.type==="hour") h = parseInt(p.value,10); if(p.type==="minute") m = parseInt(p.value,10); });
+      var hrDeg = ((h % 12) + m/60) * 30;
+      var minDeg = m * 6;
+      handHr.setAttribute("transform", "rotate(" + hrDeg + " 20 20)");
+      handMin.setAttribute("transform", "rotate(" + minDeg + " 20 20)");
+
       var dateStr = now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"});
-      widgetEl.innerHTML = timeStr + " EST — " + dateStr + '<br><span class="w-loc">Brooklyn, NY</span> ' + (window.__wx || "");
+      var timeStr = now.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"});
+      widgetText.innerHTML = '<span class="w-emoji">' + (window.__wxEmoji || "🌤") + '</span>' +
+        timeStr + " EST · " + dateStr + (window.__wxTemp ? " · " + window.__wxTemp : "") +
+        '<span class="w-loc">Brooklyn, NY</span>';
     }
     tick();
-    setInterval(tick, 30000);
+    setInterval(tick, 15000);
 
     fetch("https://api.open-meteo.com/v1/forecast?latitude=40.6782&longitude=-73.9442&current=temperature_2m,weather_code&temperature_unit=fahrenheit")
       .then(function(r){ return r.json(); })
       .then(function(data){
         var c = data.current;
         if(!c) return;
-        window.__wx = Math.round(c.temperature_2m) + "°F " + weatherLabel(c.weather_code);
+        window.__wxTemp = Math.round(c.temperature_2m) + "°F";
+        window.__wxEmoji = weatherEmoji(c.weather_code);
         tick();
       })
       .catch(function(){ /* offline / local preview: skip live weather */ });
   }
-  function weatherLabel(code){
-    if(code === 0) return "clear";
-    if([1,2,3].indexOf(code) > -1) return "cloudy";
-    if([45,48].indexOf(code) > -1) return "foggy";
-    if(code >= 51 && code <= 67) return "rainy";
-    if(code >= 71 && code <= 77) return "snowy";
-    if(code >= 80 && code <= 82) return "showers";
-    if(code >= 95) return "stormy";
-    return "";
+  function weatherEmoji(code){
+    if(code === 0) return "☀️";
+    if([1,2].indexOf(code) > -1) return "🌤";
+    if(code === 3) return "☁️";
+    if([45,48].indexOf(code) > -1) return "🌫";
+    if(code >= 51 && code <= 67) return "🌧";
+    if(code >= 71 && code <= 77) return "❄️";
+    if(code >= 80 && code <= 82) return "🌦";
+    if(code >= 95) return "⛈";
+    return "🌤";
   }
 
   /* ---------- GALLERY AUTOPLAY-WHEN-CENTERED ---------- */
