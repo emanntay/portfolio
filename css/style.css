@@ -334,6 +334,31 @@ a{color:inherit;}
   cursor: default;
 }
 .embed-item .instagram-media{ margin: 0 !important; }
+.embed-fallback{
+  width: 340px; height: 420px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: 0.9rem;
+  background: var(--bg-warm);
+  border: 1px solid rgba(84,57,35,0.16);
+  border-radius: 6px;
+  text-align:center;
+  padding: 1.5rem;
+}
+.embed-fallback-mark{
+  width:38px; height:38px; border-radius:50%;
+  background: var(--nav-accent, var(--brown));
+  color: var(--ink);
+  font-family: var(--serif-head); font-weight:800; font-size:0.68rem;
+  display:flex; align-items:center; justify-content:center;
+}
+.embed-fallback a{
+  font-family: var(--body);
+  font-size: 0.78rem;
+  color: var(--brown);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.embed-fallback a:hover{ color: var(--nav-accent, var(--red)); }
 
 /* ---------- MODAL ---------- */
 .modal{

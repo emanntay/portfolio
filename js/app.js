@@ -234,6 +234,13 @@
       bq.className = "instagram-media";
       bq.setAttribute("data-instgrm-permalink", u);
       bq.setAttribute("data-instgrm-version","14");
+      // Fallback content shown until (or unless) Instagram's script replaces this
+      // blockquote with the live embed -- without this, a post that fails to embed
+      // (deleted, private, rate-limited) just renders as blank empty space.
+      bq.innerHTML = '<div class="embed-fallback">' +
+        '<span class="embed-fallback-mark">IG</span>' +
+        '<a href="' + u + '" target="_blank" rel="noopener">View this post on Instagram &#8599;</a>' +
+        '</div>';
       cell.appendChild(bq);
       gallery.appendChild(cell);
     });
