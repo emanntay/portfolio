@@ -3,7 +3,7 @@
   var SITE = window.SITE;
   var MANIFEST = window.MANIFEST || {};
   var SECTION_ACCENT_CLASSES = ["accent-red","accent-chartreuse","accent-purple","accent-orange"];
-  var GALLERY_ACCENT_HEX = ["#e81c1c","#dcff5f","#b573bc"];
+  var SECTION_ACCENT_HEX = ["#e81c1c","#5c8f1f","#b573bc","#ffac1a"];
 
   var navList = document.getElementById("navList");
   var contentEl = document.getElementById("content");
@@ -22,7 +22,6 @@
   var hasRevealed = false;
   var currentGalleryItems = null;
   var currentGalleryIndex = 0;
-  var galleryColorCounter = 0;
 
   /* ---------- helpers ---------- */
   function mediaFor(key){ return MANIFEST[key] || []; }
@@ -60,7 +59,7 @@
 
     var groups = navList.querySelectorAll(".nav-section");
     groups.forEach(function(g, i){
-      setTimeout(function(){ g.classList.add("unfolded"); }, 70 + i * 90);
+      setTimeout(function(){ g.classList.add("unfolded"); }, 120 + i * 170);
     });
   }
 
@@ -112,7 +111,7 @@
           subBlock.appendChild(buildEmbedGrid(sub.embedUrls));
         } else {
           var items = mediaFor(sub.mediaKey);
-          subBlock.appendChild(buildGallery(items, sub.mediaKey));
+          subBlock.appendChild(buildGallery(items, sub.mediaKey, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]));
         }
         contentEl.appendChild(subBlock);
       });
@@ -144,11 +143,9 @@
     }
   }
 
-  function buildGallery(items, key){
+  function buildGallery(items, key, accent){
     var wrap = el("div","gallery-wrap");
-    var accent = GALLERY_ACCENT_HEX[galleryColorCounter % GALLERY_ACCENT_HEX.length];
-    galleryColorCounter++;
-    wrap.style.setProperty("--nav-accent", accent);
+    wrap.style.setProperty("--nav-accent", accent || "#543923");
 
     var gallery = el("div","gallery");
     gallery.dataset.key = key;
@@ -208,7 +205,17 @@
       }
       gallery.addEventListener("scroll", function(){ requestAnimationFrame(updateArrowVisibility); }, {passive:true});
       window.addEventListener("resize", updateArrowVisibility);
-      setTimeout(updateArrowVisibility, 250);
+
+      // recalc as media actually finishes loading (layout width isn't final until then)
+      gallery.querySelectorAll("img, video").forEach(function(m){
+        if(m.tagName === "IMG"){
+          if(m.complete){ updateArrowVisibility(); } else { m.addEventListener("load", updateArrowVisibility); }
+        } else {
+          m.addEventListener("loadedmetadata", updateArrowVisibility);
+        }
+      });
+      if(document.fonts && document.fonts.ready){ document.fonts.ready.then(updateArrowVisibility); }
+      [100, 400, 1000, 2500].forEach(function(t){ setTimeout(updateArrowVisibility, t); });
 
       wrap.appendChild(prev); wrap.appendChild(next);
     }
@@ -390,14 +397,23 @@
   }
 
   /* ---------- SCROLL-SPY (active nav highlighting) ---------- */
+  var SECTION_HEX_BY_SLUG = {};
+  SITE.sections.forEach(function(sec, si){ SECTION_HEX_BY_SLUG[sec.slug] = SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]; });
+
   function setActiveNav(sectionSlug, subSlug){
     navList.querySelectorAll(".nav-section-title.active").forEach(function(n){ n.classList.remove("active"); });
-    navList.querySelectorAll(".nav-sub-item.active").forEach(function(n){ n.classList.remove("active"); });
+    navList.querySelectorAll(".nav-sub-item.active").forEach(function(n){ n.classList.remove("active"); n.style.color = ""; });
+
     var titleEl = navList.querySelector('[data-target="sec-' + sectionSlug + '"]');
-    if(titleEl) titleEl.classList.add("active");
     if(subSlug){
+      // underline moves down to the subsection; section header keeps its resting color, no underline
       var subEl = navList.querySelector('[data-target="sub-' + sectionSlug + '-' + subSlug + '"]');
-      if(subEl) subEl.classList.add("active");
+      if(subEl){
+        subEl.classList.add("active");
+        subEl.style.color = SECTION_HEX_BY_SLUG[sectionSlug] || "";
+      }
+    } else if(titleEl){
+      titleEl.classList.add("active");
     }
   }
   function initScrollSpy(){
@@ -411,11 +427,21 @@
     document.querySelectorAll(".section-block").forEach(function(b){ observer.observe(b); });
   }
 
+  /* ---------- LANDING: click takes you into the first section ---------- */
+  function wireLanding(){
+    var firstId = "sec-" + SITE.sections[0].slug;
+    landingEl.addEventListener("click", function(){ goTo(firstId); });
+    landingEl.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); goTo(firstId); }
+    });
+  }
+
   /* ---------- INIT ---------- */
   renderNav();
   renderContent();
   renderAbout();
   startWidget();
   initScrollSpy();
+  wireLanding();
   requestAnimationFrame(galleryLoop);
 })();
