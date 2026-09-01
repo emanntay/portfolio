@@ -84,7 +84,7 @@
       block.dataset.sectionSlug = sec.slug;
 
       var head = el("div","section-head");
-      head.appendChild(el("h2","section-title", sec.title));
+      head.appendChild(el("h2","section-title " + SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length], sec.title));
       head.appendChild(el("p","section-intro", sec.intro));
       block.appendChild(head);
 

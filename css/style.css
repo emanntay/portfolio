@@ -7,14 +7,14 @@
   --chartreuse: #dcff5f;
   --red: #e81c1c;
   --purple: #b573bc;
-  --lime: #74d600;
+  --lime: #31ff06;
   --lime-bg: #dcff5f;
   --orange: #ffac1a;
   --nav-w: 25%;
   --nav-min: 300px;
   --serif-head: "Syne", sans-serif;
-  --body: "Fira Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --serif-body: "Fira Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --body: "IBM Plex Serif", Georgia, serif;
+  --serif-body: "IBM Plex Serif", Georgia, serif;
   --gallery-max-w: calc(100vw - max(var(--nav-min), var(--nav-w)) - 8vw);
 }
 
