@@ -2,8 +2,8 @@
   "use strict";
   var SITE = window.SITE;
   var MANIFEST = window.MANIFEST || {};
-  var ACCENTS = ["accent-red","accent-chartreuse","accent-purple"];
-  var ACCENT_HEX = ["#e81c1c","#dcff5f","#b573bc"];
+  var SECTION_ACCENT_CLASSES = ["accent-red","accent-chartreuse","accent-purple","accent-orange"];
+  var GALLERY_ACCENT_HEX = ["#e81c1c","#dcff5f","#b573bc"];
 
   var navList = document.getElementById("navList");
   var contentEl = document.getElementById("content");
@@ -37,7 +37,7 @@
   function renderNav(){
     SITE.sections.forEach(function(sec, si){
       var wrap = el("div","nav-section");
-      var title = el("button","nav-section-title " + ACCENTS[si % ACCENTS.length], sec.title);
+      var title = el("button","nav-section-title " + SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length], sec.title);
       title.dataset.target = "sec-" + sec.slug;
       wrap.appendChild(title);
 
@@ -82,6 +82,7 @@
     SITE.sections.forEach(function(sec, si){
       var block = el("div","section-block tinted");
       block.id = "sec-" + sec.slug;
+      block.dataset.sectionSlug = sec.slug;
 
       var head = el("div","section-head");
       head.appendChild(el("h2","section-title", sec.title));
@@ -99,6 +100,8 @@
       sec.subsections.forEach(function(sub){
         var subBlock = el("div","section-block subsection");
         subBlock.id = "sub-" + sec.slug + "-" + sub.slug;
+        subBlock.dataset.sectionSlug = sec.slug;
+        subBlock.dataset.subSlug = sub.slug;
         subBlock.appendChild(el("h3","project-title", sub.title));
         subBlock.appendChild(el("p","project-copy", sub.copy));
         if(sub.credits && sub.credits.length){
@@ -143,7 +146,7 @@
 
   function buildGallery(items, key){
     var wrap = el("div","gallery-wrap");
-    var accent = ACCENT_HEX[galleryColorCounter % ACCENT_HEX.length];
+    var accent = GALLERY_ACCENT_HEX[galleryColorCounter % GALLERY_ACCENT_HEX.length];
     galleryColorCounter++;
     wrap.style.setProperty("--nav-accent", accent);
 
@@ -172,10 +175,41 @@
     wrap.appendChild(gallery);
 
     if(items.length > 1){
-      var prev = el("button","gallery-arrow gallery-prev","‹");
+      var prev = el("button","gallery-arrow gallery-prev is-hidden","‹");
       var next = el("button","gallery-arrow gallery-next","›");
-      prev.addEventListener("click", function(){ gallery.scrollBy({left:-360, behavior:"smooth"}); });
-      next.addEventListener("click", function(){ gallery.scrollBy({left:360, behavior:"smooth"}); });
+
+      function cellScrollLeft(cell){
+        return cell.getBoundingClientRect().left - gallery.getBoundingClientRect().left + gallery.scrollLeft;
+      }
+      function scrollToAdjacent(dir){
+        var cells = Array.prototype.slice.call(gallery.querySelectorAll(".gallery-item"));
+        var cur = gallery.scrollLeft;
+        var target = null;
+        if(dir > 0){
+          for(var i=0;i<cells.length;i++){
+            var l = cellScrollLeft(cells[i]);
+            if(l > cur + 10){ target = l; break; }
+          }
+        } else {
+          for(var i=cells.length-1;i>=0;i--){
+            var l = cellScrollLeft(cells[i]);
+            if(l < cur - 10){ target = l; break; }
+          }
+        }
+        if(target !== null) gallery.scrollTo({left: target, behavior:"smooth"});
+      }
+      prev.addEventListener("click", function(){ scrollToAdjacent(-1); });
+      next.addEventListener("click", function(){ scrollToAdjacent(1); });
+
+      function updateArrowVisibility(){
+        var maxScroll = gallery.scrollWidth - gallery.clientWidth;
+        prev.classList.toggle("is-hidden", gallery.scrollLeft <= 4);
+        next.classList.toggle("is-hidden", gallery.scrollLeft >= maxScroll - 4 || maxScroll <= 0);
+      }
+      gallery.addEventListener("scroll", function(){ requestAnimationFrame(updateArrowVisibility); }, {passive:true});
+      window.addEventListener("resize", updateArrowVisibility);
+      setTimeout(updateArrowVisibility, 250);
+
       wrap.appendChild(prev); wrap.appendChild(next);
     }
 
@@ -355,10 +389,33 @@
     requestAnimationFrame(galleryLoop);
   }
 
+  /* ---------- SCROLL-SPY (active nav highlighting) ---------- */
+  function setActiveNav(sectionSlug, subSlug){
+    navList.querySelectorAll(".nav-section-title.active").forEach(function(n){ n.classList.remove("active"); });
+    navList.querySelectorAll(".nav-sub-item.active").forEach(function(n){ n.classList.remove("active"); });
+    var titleEl = navList.querySelector('[data-target="sec-' + sectionSlug + '"]');
+    if(titleEl) titleEl.classList.add("active");
+    if(subSlug){
+      var subEl = navList.querySelector('[data-target="sub-' + sectionSlug + '-' + subSlug + '"]');
+      if(subEl) subEl.classList.add("active");
+    }
+  }
+  function initScrollSpy(){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          setActiveNav(e.target.dataset.sectionSlug, e.target.dataset.subSlug);
+        }
+      });
+    }, {rootMargin: "-12% 0px -78% 0px", threshold: 0});
+    document.querySelectorAll(".section-block").forEach(function(b){ observer.observe(b); });
+  }
+
   /* ---------- INIT ---------- */
   renderNav();
   renderContent();
   renderAbout();
   startWidget();
+  initScrollSpy();
   requestAnimationFrame(galleryLoop);
 })();
