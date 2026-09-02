@@ -57,6 +57,7 @@
     navList.addEventListener("click", function(e){
       var target = e.target.closest("[data-target]");
       if(!target) return;
+      if(aboutPanel.classList.contains("open")) closeAbout();
       goTo(target.dataset.target);
       if(window.innerWidth <= 860) closeMobileNav();
     });

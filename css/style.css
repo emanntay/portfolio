@@ -156,6 +156,7 @@ a{color:inherit;}
 .nav-sub-item.row-in{ animation: unfold .36s steps(6, end) forwards; }
 .nav-sub-item.active{
   opacity: 1;
+  font-weight: 700;
   border-bottom-width: 2.5px;
   border-bottom-color: var(--brown);
 }
