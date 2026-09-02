@@ -10,7 +10,7 @@
   --blue: #0086ff;
   --nav-w: 25%;
   --nav-min: 300px;
-  --serif-head: "Syne", sans-serif;
+  --serif-head: "Prata", serif;
   --body: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
   --serif-body: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
   --gallery-max-w: calc(100vw - max(var(--nav-min), var(--nav-w)) - 8vw);
@@ -51,7 +51,7 @@ a{color:inherit;}
   font-family: var(--serif-head);
   font-weight: 800;
   font-size: clamp(0.95rem, 1.5vw, 1.15rem);
-  letter-spacing: 0.01em;
+  letter-spacing: -0.03em;
   color: var(--brown);
   cursor: default;
 }
@@ -66,7 +66,7 @@ a{color:inherit;}
   font-family: var(--serif-head);
   font-weight: 800;
   font-size: clamp(0.8rem, 1.1vw, 0.95rem);
-  letter-spacing: 0.08em;
+  letter-spacing: -0.03em;
   text-transform: uppercase;
   color: var(--brown);
   padding-bottom: 3px;
@@ -105,7 +105,7 @@ a{color:inherit;}
   font-weight: 700;
   font-size: 0.82rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: -0.03em;
   padding: 0.36rem 0;
   border-bottom: 1px solid rgba(84,57,35,0.4);
   transition: opacity .2s ease, border-color .2s ease, border-bottom-width .2s ease;
@@ -269,6 +269,7 @@ a{color:inherit;}
   font-family: var(--serif-head);
   font-weight: 800;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.03em;
   margin: 0 0 0.9rem 0;
 }
 .section-intro{
@@ -292,6 +293,7 @@ a{color:inherit;}
   font-family: var(--serif-head);
   font-weight: 700;
   font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+  letter-spacing: -0.03em;
   margin: 0 0 0.6rem 0;
 }
 .project-copy{
@@ -433,13 +435,14 @@ a{color:inherit;}
   display:flex; align-items:center; justify-content:center;
   color: rgba(255,255,255,0.45);
   font-family: var(--serif-head); font-weight:700; font-size:0.68rem;
-  letter-spacing:0.08em; text-transform:uppercase;
+  letter-spacing:-0.03em; text-transform:uppercase;
 }
 .about-lead{
   font-family: var(--serif-head);
   font-weight: 800;
   color: var(--chartreuse);
   font-size: clamp(1.25rem, 2.3vw, 1.7rem);
+  letter-spacing: -0.03em;
   line-height: 1.35;
   margin: 0 0 1.2rem 0;
 }
