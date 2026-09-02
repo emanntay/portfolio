@@ -2,21 +2,25 @@
   "use strict";
   var SITE = window.SITE;
   var MANIFEST = window.MANIFEST || {};
-  var SECTION_ACCENT_CLASSES = ["accent-red","accent-chartreuse","accent-purple","accent-blue"];
-  var SECTION_ACCENT_HEX = ["#e81c1c","#bfea0a","#ac21bf","#0086ff"];
+  var SECTION_ACCENT_CLASSES = ["accent-red","accent-chartreuse","accent-purple","accent-orange"];
+  var SECTION_ACCENT_HEX = ["#d13333","#bfea0a","#c275d3","#ffc136"];
 
   var navList = document.getElementById("navList");
   var contentEl = document.getElementById("content");
   var landingEl = document.getElementById("landing");
   var aboutBtn = document.getElementById("aboutBtn");
   var aboutPanel = document.getElementById("aboutPanel");
-  var aboutPhoto = document.getElementById("aboutPhoto");
   var aboutBody = document.getElementById("aboutBody");
   var LINKEDIN_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="19" height="19" rx="3"/><line x1="7.3" y1="10.2" x2="7.3" y2="17"/><circle cx="7.3" cy="6.6" r="0.35" fill="currentColor" stroke="none"/><path d="M11 17v-4.4c0-1.5 1-2.4 2.3-2.4 1.3 0 2.1.9 2.1 2.5V17"/><line x1="11" y1="10.2" x2="11" y2="17"/></svg>';
   var EMAIL_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="4.7" width="19" height="14.6" rx="2.2"/><path d="M3 6.8l9 6.4 9-6.4"/></svg>';
+  var PIXEL_ARROW_SVG = '<svg viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="3" y="1" width="1" height="1" fill="currentColor"/><rect x="3" y="2" width="2" height="1" fill="currentColor"/><rect x="3" y="3" width="3" height="1" fill="currentColor"/><rect x="3" y="4" width="4" height="1" fill="currentColor"/><rect x="3" y="5" width="3" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="1" fill="currentColor"/><rect x="3" y="7" width="1" height="1" fill="currentColor"/></svg>';
+  var PIXEL_X_SVG = '<svg viewBox="0 0 7 7" shape-rendering="crispEdges"><rect x="0" y="0" width="1" height="1" fill="currentColor"/><rect x="6" y="0" width="1" height="1" fill="currentColor"/><rect x="1" y="1" width="1" height="1" fill="currentColor"/><rect x="5" y="1" width="1" height="1" fill="currentColor"/><rect x="2" y="2" width="1" height="1" fill="currentColor"/><rect x="4" y="2" width="1" height="1" fill="currentColor"/><rect x="3" y="3" width="1" height="1" fill="currentColor"/><rect x="2" y="4" width="1" height="1" fill="currentColor"/><rect x="4" y="4" width="1" height="1" fill="currentColor"/><rect x="1" y="5" width="1" height="1" fill="currentColor"/><rect x="5" y="5" width="1" height="1" fill="currentColor"/><rect x="0" y="6" width="1" height="1" fill="currentColor"/><rect x="6" y="6" width="1" height="1" fill="currentColor"/></svg>';
+  var SOUND_ON_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M15.5 12c0-1.77-1-3.3-2.5-4.03v8.06c1.5-.73 2.5-2.26 2.5-4.03z"/><path d="M13 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4-.91 7-4.49 7-8.77s-3-7.86-7-8.77z"/></svg>';
+  var SOUND_OFF_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M19.8 12l2.5-2.5-1.3-1.3-2.5 2.5-2.5-2.5-1.3 1.3 2.5 2.5-2.5 2.5 1.3 1.3 2.5-2.5 2.5 2.5 1.3-1.3z"/></svg>';
+  var PLAY_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
   var hamburger = document.getElementById("hamburger");
   var navEl = document.getElementById("nav");
-  var widgetText = document.getElementById("widgetText");
   var handHr = document.getElementById("handHr");
   var handMin = document.getElementById("handMin");
   var lightbox = document.getElementById("lightbox");
@@ -98,7 +102,9 @@
       var heroItems = mediaFor(sec.heroKey);
       if(heroItems.length){
         var heroWrap = el("div","hero-media");
-        heroWrap.appendChild(buildMedia(heroItems[0], {sound: !!sec.heroSound, isHero:true}));
+        var heroMedia = buildMedia(heroItems[0], {sound: !!sec.heroSound, isHero:true});
+        heroWrap.appendChild(heroMedia);
+        if(heroItems[0].type === "video"){ wireHeroVideo(heroMedia, heroWrap); }
         block.appendChild(heroWrap);
       }
       contentEl.appendChild(block);
@@ -115,13 +121,44 @@
         }
 
         if(sub.embeds){
-          subBlock.appendChild(buildEmbedGallery(sub.embedUrls, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]));
+          subBlock.appendChild(buildEmbedGallery(sub.embedUrls, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length], SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length]));
         } else {
           var items = mediaFor(sub.mediaKey);
-          subBlock.appendChild(buildGallery(items, sub.mediaKey, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]));
+          subBlock.appendChild(buildGallery(items, sub.mediaKey, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length], SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length]));
         }
         contentEl.appendChild(subBlock);
       });
+    });
+  }
+
+  function wireHeroVideo(video, wrap){
+    var progress = el("div","hero-progress");
+    var progressBar = el("div","hero-progress-bar");
+    progress.appendChild(progressBar);
+    wrap.appendChild(progress);
+
+    var controls = el("div","hero-controls");
+    var playBtn = el("button","hero-btn hero-play", PLAY_SVG);
+    playBtn.setAttribute("aria-label","Play or pause");
+    var soundBtn = el("button","hero-btn hero-sound", video.muted ? SOUND_OFF_SVG : SOUND_ON_SVG);
+    soundBtn.setAttribute("aria-label","Toggle sound");
+    soundBtn.addEventListener("click", function(e){
+      e.stopPropagation();
+      video.muted = !video.muted;
+      soundBtn.innerHTML = video.muted ? SOUND_OFF_SVG : SOUND_ON_SVG;
+    });
+    playBtn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(video.paused){ video.play().catch(function(){}); } else { video.pause(); }
+    });
+    controls.appendChild(playBtn);
+    controls.appendChild(soundBtn);
+    wrap.appendChild(controls);
+
+    video.addEventListener("play", function(){ playBtn.innerHTML = PAUSE_SVG; });
+    video.addEventListener("pause", function(){ playBtn.innerHTML = PLAY_SVG; });
+    video.addEventListener("timeupdate", function(){
+      if(video.duration){ progressBar.style.width = (video.currentTime/video.duration*100) + "%"; }
     });
   }
 
@@ -159,8 +196,8 @@
     var items = gallery.querySelectorAll(itemSelector);
     if(items.length <= 1) return;
 
-    var prev = el("button","gallery-arrow gallery-prev is-hidden","‹");
-    var next = el("button","gallery-arrow gallery-next","›");
+    var prev = el("button","gallery-arrow gallery-prev is-hidden", PIXEL_ARROW_SVG);
+    var next = el("button","gallery-arrow gallery-next", PIXEL_ARROW_SVG);
 
     function cellScrollLeft(cell){
       return cell.getBoundingClientRect().left - gallery.getBoundingClientRect().left + gallery.scrollLeft;
@@ -196,8 +233,8 @@
     wrap.appendChild(prev); wrap.appendChild(next);
   }
 
-  function buildGallery(items, key, accent){
-    var wrap = el("div","gallery-wrap");
+  function buildGallery(items, key, accent, accentClass){
+    var wrap = el("div","gallery-wrap" + (accentClass ? " " + accentClass : ""));
     wrap.style.setProperty("--nav-accent", accent || "#543923");
 
     var gallery = el("div","gallery");
@@ -209,13 +246,28 @@
       var media = buildMedia(item, {sound:false});
       cell.appendChild(media);
       if(item.type === "video"){
-        var badge = el("div","sound-badge","🔇");
+        var badge = el("div","sound-badge", SOUND_OFF_SVG);
         badge.addEventListener("click", function(e){
           e.stopPropagation();
           media.muted = !media.muted;
-          badge.textContent = media.muted ? "🔇" : "🔊";
+          badge.innerHTML = media.muted ? SOUND_OFF_SVG : SOUND_ON_SVG;
         });
         cell.appendChild(badge);
+
+        var progress = el("div","video-progress");
+        var progressBar = el("div","video-progress-bar");
+        progress.appendChild(progressBar);
+        cell.appendChild(progress);
+
+        var playOverlay = el("div","play-overlay");
+        playOverlay.appendChild(el("div","play-overlay-icon", PLAY_SVG));
+        cell.appendChild(playOverlay);
+
+        media.addEventListener("play", function(){ cell.classList.add("is-playing"); });
+        media.addEventListener("pause", function(){ cell.classList.remove("is-playing"); });
+        media.addEventListener("timeupdate", function(){
+          if(media.duration){ progressBar.style.width = (media.currentTime/media.duration*100) + "%"; }
+        });
       }
       cell.addEventListener("click", function(){
         openLightbox(items, idx);
@@ -229,8 +281,8 @@
     return wrap;
   }
 
-  function buildEmbedGallery(urls, accent){
-    var wrap = el("div","gallery-wrap");
+  function buildEmbedGallery(urls, accent, accentClass){
+    var wrap = el("div","gallery-wrap" + (accentClass ? " " + accentClass : ""));
     wrap.style.setProperty("--nav-accent", accent || "#543923");
 
     var gallery = el("div","gallery gallery-embeds");
@@ -311,10 +363,6 @@
 
   /* ---------- ABOUT PANEL (confined to the right/work section) ---------- */
   function renderAbout(){
-    if(SITE.about.photo){
-      aboutPhoto.style.backgroundImage = "url('" + SITE.about.photo + "')";
-      aboutPhoto.textContent = "";
-    }
     if(SITE.about.lead){
       aboutBody.appendChild(el("p","about-lead", SITE.about.lead));
     }
@@ -343,7 +391,7 @@
     aboutPanel.classList.add("open");
     aboutPanel.setAttribute("aria-hidden","false");
     aboutBtn.classList.add("open");
-    aboutBtn.textContent = "\u00d7";
+    aboutBtn.innerHTML = PIXEL_X_SVG;
     aboutBtn.setAttribute("aria-label","Close about");
   }
   function closeAbout(){
@@ -372,15 +420,14 @@
     hamburger.setAttribute("aria-expanded", open ? "true":"false");
   });
 
-  /* ---------- WIDGET: analog clock + illustrated sky tile ---------- */
-  var SKY_SVG = {
-    clear: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#0086ff"/><circle cx="20" cy="20" r="10" fill="#bfea0a"/></svg>',
-    partly: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#0086ff"/><circle cx="14" cy="14" r="7" fill="#bfea0a"/><ellipse cx="23" cy="26" rx="13" ry="8" fill="#543923"/><ellipse cx="15" cy="24" rx="9" ry="6" fill="#543923"/></svg>',
-    cloudy: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#cabfae"/><ellipse cx="22" cy="20" rx="14" ry="9" fill="#543923"/><ellipse cx="13" cy="23" rx="10" ry="7" fill="#543923"/></svg>',
-    fog: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#cabfae"/><rect y="10" width="40" height="4" fill="#543923" opacity="0.5"/><rect y="18" width="40" height="4" fill="#543923" opacity="0.35"/><rect y="26" width="40" height="4" fill="#543923" opacity="0.5"/></svg>',
-    rain: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#005fb3"/><ellipse cx="20" cy="15" rx="14" ry="8" fill="#543923"/><line x1="12" y1="27" x2="9" y2="36" stroke="#f7f3ec" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="27" x2="17" y2="36" stroke="#f7f3ec" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="27" x2="25" y2="36" stroke="#f7f3ec" stroke-width="2" stroke-linecap="round"/></svg>',
-    snow: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#0086ff"/><ellipse cx="20" cy="15" rx="13" ry="8" fill="#543923"/><circle cx="12" cy="30" r="1.6" fill="#f7f3ec"/><circle cx="20" cy="33" r="1.6" fill="#f7f3ec"/><circle cx="28" cy="30" r="1.6" fill="#f7f3ec"/></svg>',
-    storm: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#543923"/><ellipse cx="20" cy="14" rx="14" ry="8" fill="#2e2013"/><polygon points="21,18 15,28 19,28 16,36 26,24 21,24 24,18" fill="#e81c1c"/></svg>'
+  /* ---------- WIDGET: big analog clock + date / weather text rows ---------- */
+  var WEATHER_EMOJI = {
+    clear: "☀️", partly: "⛅", cloudy: "☁️", fog: "🌫️",
+    rain: "🌧️", snow: "❄️", storm: "⛈️"
+  };
+  var WEATHER_LABEL = {
+    clear: "Clear", partly: "Partly Cloudy", cloudy: "Cloudy", fog: "Foggy",
+    rain: "Rainy", snow: "Snow", storm: "Storms"
   };
   function skyCategory(code){
     if(code === 0) return "clear";
@@ -394,8 +441,8 @@
   }
 
   function startWidget(){
-    var skyTile = document.getElementById("skyTile");
-    skyTile.innerHTML = SKY_SVG.partly;
+    var widgetDate = document.getElementById("widgetDate");
+    var widgetWeather = document.getElementById("widgetWeather");
 
     function tick(){
       var now = new Date();
@@ -407,8 +454,10 @@
       handHr.setAttribute("transform", "rotate(" + hrDeg + " 20 20)");
       handMin.setAttribute("transform", "rotate(" + minDeg + " 20 20)");
 
-      var dateStr = now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"});
-      widgetText.textContent = dateStr + (window.__wxTemp ? " · " + window.__wxTemp : "");
+      widgetDate.textContent = now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"});
+      if(window.__wxCategory){
+        widgetWeather.textContent = WEATHER_EMOJI[window.__wxCategory] + " " + WEATHER_LABEL[window.__wxCategory] + (window.__wxTemp ? " · " + window.__wxTemp : "");
+      }
     }
     tick();
     setInterval(tick, 15000);
@@ -419,7 +468,7 @@
         var c = data.current;
         if(!c) return;
         window.__wxTemp = Math.round(c.temperature_2m) + "°F";
-        skyTile.innerHTML = SKY_SVG[skyCategory(c.weather_code)];
+        window.__wxCategory = skyCategory(c.weather_code);
         tick();
       })
       .catch(function(){ /* offline / local preview: skip live weather */ });
@@ -432,6 +481,7 @@
       var grect = g.getBoundingClientRect();
       var galleryVisible = grect.bottom > 0 && grect.top < window.innerHeight;
       var containerCenter = grect.left + grect.width/2;
+      var threshold = Math.max(grect.width * 0.3, 160);
       var items = g.querySelectorAll(".gallery-item");
       var best = null, bestDist = Infinity;
       items.forEach(function(cell){
@@ -443,7 +493,7 @@
       items.forEach(function(cell){
         var v = cell.querySelector("video");
         if(!v) return;
-        var shouldPlay = galleryVisible && cell === best && bestDist < cell.getBoundingClientRect().width * 0.6;
+        var shouldPlay = galleryVisible && cell === best && bestDist < threshold;
         if(shouldPlay){
           if(v.paused){ v.play().catch(function(){}); }
         } else if(!v.paused){
@@ -494,6 +544,18 @@
     });
   }
 
+  /* ---------- SITE NAME: click to jump to top ---------- */
+  function wireSiteName(){
+    var siteNameEl = document.getElementById("siteName");
+    if(!siteNameEl) return;
+    siteNameEl.addEventListener("click", function(){
+      window.scrollTo({top:0, behavior:"smooth"});
+    });
+    siteNameEl.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); window.scrollTo({top:0, behavior:"smooth"}); }
+    });
+  }
+
   /* ---------- INIT ---------- */
   renderNav();
   renderContent();
@@ -501,5 +563,6 @@
   startWidget();
   initScrollSpy();
   wireLanding();
+  wireSiteName();
   requestAnimationFrame(galleryLoop);
 })();

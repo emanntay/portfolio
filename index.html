@@ -18,26 +18,26 @@
   <div class="about-fixed"><button id="aboutBtn" class="about-btn">About</button></div>
 
   <nav id="nav" class="nav">
-    <div class="corner corner-tl"><span id="siteName" class="site-name">Emily Taylor</span></div>
+    <div class="corner corner-tl"><span id="siteName" class="site-name" tabindex="0" role="button" aria-label="Scroll to top">Emily Taylor</span></div>
 
     <div id="navList" class="nav-list"></div>
 
     <div class="corner corner-bl">
       <div id="widget" class="widget">
-        <div class="widget-top">
-          <svg class="widget-clock" id="clockFace" viewBox="0 0 40 40">
-            <circle class="face" cx="20" cy="20" r="18.5"></circle>
-            <line class="tick" x1="20" y1="3" x2="20" y2="5.5"></line>
-            <line class="tick" x1="20" y1="34.5" x2="20" y2="37"></line>
-            <line class="tick" x1="3" y1="20" x2="5.5" y2="20"></line>
-            <line class="tick" x1="34.5" y1="20" x2="37" y2="20"></line>
-            <line id="handHr" class="hand-hr" x1="20" y1="20" x2="20" y2="12"></line>
-            <line id="handMin" class="hand-min" x1="20" y1="20" x2="20" y2="7"></line>
-            <circle class="pin" cx="20" cy="20" r="1.6"></circle>
-          </svg>
-          <div id="skyTile" class="widget-sky" aria-hidden="true"></div>
+        <svg class="widget-clock" id="clockFace" viewBox="0 0 40 40">
+          <circle class="face" cx="20" cy="20" r="18.5"></circle>
+          <line class="tick" x1="20" y1="3" x2="20" y2="5.5"></line>
+          <line class="tick" x1="20" y1="34.5" x2="20" y2="37"></line>
+          <line class="tick" x1="3" y1="20" x2="5.5" y2="20"></line>
+          <line class="tick" x1="34.5" y1="20" x2="37" y2="20"></line>
+          <line id="handHr" class="hand-hr" x1="20" y1="20" x2="20" y2="12"></line>
+          <line id="handMin" class="hand-min" x1="20" y1="20" x2="20" y2="7"></line>
+          <circle class="pin" cx="20" cy="20" r="1.6"></circle>
+        </svg>
+        <div class="widget-text">
+          <div id="widgetDate" class="widget-date"></div>
+          <div id="widgetWeather" class="widget-weather"></div>
         </div>
-        <div id="widgetText" class="widget-text"></div>
       </div>
     </div>
   </nav>
@@ -49,7 +49,7 @@
         <div class="blob blob-red"></div>
         <div class="blob blob-purple"></div>
         <div class="blob blob-lime"></div>
-        <div class="blob blob-blue"></div>
+        <div class="blob blob-orange"></div>
       </div>
     </div>
     <div id="content" class="content"></div>
@@ -58,16 +58,15 @@
 
 <div id="aboutPanel" class="about-panel" aria-hidden="true">
   <div class="about-panel-inner">
-    <div id="aboutPhoto" class="about-photo-placeholder" aria-hidden="true">Photo</div>
     <div id="aboutBody" class="about-copy"></div>
   </div>
 </div>
 
 <div id="lightbox" class="lightbox" aria-hidden="true">
-  <button class="lightbox-close" data-lightbox-close aria-label="Close">&times;</button>
-  <button class="lightbox-arrow lightbox-prev" data-lightbox-prev aria-label="Previous">&#8249;</button>
+  <button class="lightbox-close" data-lightbox-close aria-label="Close"><svg viewBox="0 0 7 7" shape-rendering="crispEdges"><rect x="0" y="0" width="1" height="1" fill="currentColor"/><rect x="6" y="0" width="1" height="1" fill="currentColor"/><rect x="1" y="1" width="1" height="1" fill="currentColor"/><rect x="5" y="1" width="1" height="1" fill="currentColor"/><rect x="2" y="2" width="1" height="1" fill="currentColor"/><rect x="4" y="2" width="1" height="1" fill="currentColor"/><rect x="3" y="3" width="1" height="1" fill="currentColor"/><rect x="2" y="4" width="1" height="1" fill="currentColor"/><rect x="4" y="4" width="1" height="1" fill="currentColor"/><rect x="1" y="5" width="1" height="1" fill="currentColor"/><rect x="5" y="5" width="1" height="1" fill="currentColor"/><rect x="0" y="6" width="1" height="1" fill="currentColor"/><rect x="6" y="6" width="1" height="1" fill="currentColor"/></svg></button>
+  <button class="lightbox-arrow lightbox-prev" data-lightbox-prev aria-label="Previous"><svg viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="3" y="1" width="1" height="1" fill="currentColor"/><rect x="3" y="2" width="2" height="1" fill="currentColor"/><rect x="3" y="3" width="3" height="1" fill="currentColor"/><rect x="3" y="4" width="4" height="1" fill="currentColor"/><rect x="3" y="5" width="3" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="1" fill="currentColor"/><rect x="3" y="7" width="1" height="1" fill="currentColor"/></svg></button>
   <div id="lightboxContent" class="lightbox-content"></div>
-  <button class="lightbox-arrow lightbox-next" data-lightbox-next aria-label="Next">&#8250;</button>
+  <button class="lightbox-arrow lightbox-next" data-lightbox-next aria-label="Next"><svg viewBox="0 0 10 10" shape-rendering="crispEdges"><rect x="3" y="1" width="1" height="1" fill="currentColor"/><rect x="3" y="2" width="2" height="1" fill="currentColor"/><rect x="3" y="3" width="3" height="1" fill="currentColor"/><rect x="3" y="4" width="4" height="1" fill="currentColor"/><rect x="3" y="5" width="3" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="1" fill="currentColor"/><rect x="3" y="7" width="1" height="1" fill="currentColor"/></svg></button>
 </div>
 
 <script src="js/content.js"></script>
