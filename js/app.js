@@ -9,8 +9,11 @@
   var contentEl = document.getElementById("content");
   var landingEl = document.getElementById("landing");
   var aboutBtn = document.getElementById("aboutBtn");
-  var aboutModal = document.getElementById("aboutModal");
+  var aboutPanel = document.getElementById("aboutPanel");
+  var aboutPhoto = document.getElementById("aboutPhoto");
   var aboutBody = document.getElementById("aboutBody");
+  var LINKEDIN_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="19" height="19" rx="3"/><line x1="7.3" y1="10.2" x2="7.3" y2="17"/><circle cx="7.3" cy="6.6" r="0.35" fill="currentColor" stroke="none"/><path d="M11 17v-4.4c0-1.5 1-2.4 2.3-2.4 1.3 0 2.1.9 2.1 2.5V17"/><line x1="11" y1="10.2" x2="11" y2="17"/></svg>';
+  var EMAIL_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="4.7" width="19" height="14.6" rx="2.2"/><path d="M3 6.8l9 6.4 9-6.4"/></svg>';
   var hamburger = document.getElementById("hamburger");
   var navEl = document.getElementById("nav");
   var widgetText = document.getElementById("widgetText");
@@ -44,6 +47,7 @@
       sec.subsections.forEach(function(sub){
         var li = el("li","nav-sub-item", sub.title);
         li.dataset.target = "sub-" + sec.slug + "-" + sub.slug;
+        li.style.setProperty("--nav-accent", SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]);
         ul.appendChild(li);
       });
       wrap.appendChild(ul);
@@ -304,23 +308,55 @@
     if(e.key === "ArrowLeft") document.querySelector(".lightbox-prev").click();
   });
 
-  /* ---------- ABOUT MODAL ---------- */
+  /* ---------- ABOUT PANEL (confined to the right/work section) ---------- */
   function renderAbout(){
-    aboutBody.appendChild(el("div","about-photo","photo"));
-    aboutBody.appendChild(el("div","about-name", SITE.name));
+    if(SITE.about.photo){
+      aboutPhoto.style.backgroundImage = "url('" + SITE.about.photo + "')";
+      aboutPhoto.textContent = "";
+    }
+    if(SITE.about.lead){
+      aboutBody.appendChild(el("p","about-lead", SITE.about.lead));
+    }
     SITE.about.copy.forEach(function(p){
-      aboutBody.appendChild(el("p", null, p));
+      aboutBody.appendChild(el("p","about-copy-p", p));
     });
+
+    var social = el("div","about-social");
+    if(SITE.about.linkedin){
+      var linkedinLink = document.createElement("a");
+      linkedinLink.href = SITE.about.linkedin;
+      linkedinLink.target = "_blank";
+      linkedinLink.rel = "noopener";
+      linkedinLink.setAttribute("aria-label","LinkedIn");
+      linkedinLink.innerHTML = LINKEDIN_SVG;
+      social.appendChild(linkedinLink);
+    }
+    var emailLink = document.createElement("a");
+    emailLink.href = "mailto:" + (SITE.about.email || "");
+    emailLink.setAttribute("aria-label","Email");
+    emailLink.innerHTML = EMAIL_SVG;
+    social.appendChild(emailLink);
+    aboutBody.appendChild(social);
+  }
+  function openAbout(){
+    aboutPanel.classList.add("open");
+    aboutPanel.setAttribute("aria-hidden","false");
+    aboutBtn.classList.add("open");
+    aboutBtn.textContent = "\u00d7";
+    aboutBtn.setAttribute("aria-label","Close about");
+  }
+  function closeAbout(){
+    aboutPanel.classList.remove("open");
+    aboutPanel.setAttribute("aria-hidden","true");
+    aboutBtn.classList.remove("open");
+    aboutBtn.textContent = "About";
+    aboutBtn.setAttribute("aria-label","About");
   }
   aboutBtn.addEventListener("click", function(){
-    aboutModal.classList.add("open");
-    aboutModal.setAttribute("aria-hidden","false");
+    if(aboutPanel.classList.contains("open")){ closeAbout(); } else { openAbout(); }
   });
-  document.querySelectorAll("#aboutModal [data-close]").forEach(function(b){
-    b.addEventListener("click", function(){
-      aboutModal.classList.remove("open");
-      aboutModal.setAttribute("aria-hidden","true");
-    });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && aboutPanel.classList.contains("open")) closeAbout();
   });
 
   /* ---------- MOBILE NAV ---------- */
