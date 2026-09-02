@@ -2,8 +2,8 @@
   "use strict";
   var SITE = window.SITE;
   var MANIFEST = window.MANIFEST || {};
-  var SECTION_ACCENT_CLASSES = ["accent-red","accent-chartreuse","accent-purple","accent-orange"];
-  var SECTION_ACCENT_HEX = ["#e81c1c","#5c8f1f","#b573bc","#ffac1a"];
+  var SECTION_ACCENT_CLASSES = ["accent-red","accent-chartreuse","accent-purple","accent-blue"];
+  var SECTION_ACCENT_HEX = ["#e81c1c","#bfea0a","#ac21bf","#0086ff"];
 
   var navList = document.getElementById("navList");
   var contentEl = document.getElementById("content");
@@ -57,9 +57,11 @@
       if(window.innerWidth <= 860) closeMobileNav();
     });
 
-    var groups = navList.querySelectorAll(".nav-section");
-    groups.forEach(function(g, i){
-      setTimeout(function(){ g.classList.add("unfolded"); }, 120 + i * 170);
+    // Waterfall reveal: every row (header or subsection) drops in on its own,
+    // very quickly, one after another -- not grouped by section.
+    var rows = navList.querySelectorAll(".nav-section-title, .nav-sub-item");
+    rows.forEach(function(row, i){
+      setTimeout(function(){ row.classList.add("row-in"); }, 60 + i * 45);
     });
   }
 
@@ -333,8 +335,31 @@
     hamburger.setAttribute("aria-expanded", open ? "true":"false");
   });
 
-  /* ---------- WIDGET: analog clock + weather emoji ---------- */
+  /* ---------- WIDGET: analog clock + illustrated sky tile ---------- */
+  var SKY_SVG = {
+    clear: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#0086ff"/><circle cx="20" cy="20" r="10" fill="#bfea0a"/></svg>',
+    partly: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#0086ff"/><circle cx="14" cy="14" r="7" fill="#bfea0a"/><ellipse cx="23" cy="26" rx="13" ry="8" fill="#543923"/><ellipse cx="15" cy="24" rx="9" ry="6" fill="#543923"/></svg>',
+    cloudy: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#cabfae"/><ellipse cx="22" cy="20" rx="14" ry="9" fill="#543923"/><ellipse cx="13" cy="23" rx="10" ry="7" fill="#543923"/></svg>',
+    fog: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#cabfae"/><rect y="10" width="40" height="4" fill="#543923" opacity="0.5"/><rect y="18" width="40" height="4" fill="#543923" opacity="0.35"/><rect y="26" width="40" height="4" fill="#543923" opacity="0.5"/></svg>',
+    rain: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#005fb3"/><ellipse cx="20" cy="15" rx="14" ry="8" fill="#543923"/><line x1="12" y1="27" x2="9" y2="36" stroke="#f7f3ec" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="27" x2="17" y2="36" stroke="#f7f3ec" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="27" x2="25" y2="36" stroke="#f7f3ec" stroke-width="2" stroke-linecap="round"/></svg>',
+    snow: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#0086ff"/><ellipse cx="20" cy="15" rx="13" ry="8" fill="#543923"/><circle cx="12" cy="30" r="1.6" fill="#f7f3ec"/><circle cx="20" cy="33" r="1.6" fill="#f7f3ec"/><circle cx="28" cy="30" r="1.6" fill="#f7f3ec"/></svg>',
+    storm: '<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#543923"/><ellipse cx="20" cy="14" rx="14" ry="8" fill="#2e2013"/><polygon points="21,18 15,28 19,28 16,36 26,24 21,24 24,18" fill="#e81c1c"/></svg>'
+  };
+  function skyCategory(code){
+    if(code === 0) return "clear";
+    if([1,2].indexOf(code) > -1) return "partly";
+    if(code === 3) return "cloudy";
+    if([45,48].indexOf(code) > -1) return "fog";
+    if((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "rain";
+    if(code >= 71 && code <= 77) return "snow";
+    if(code >= 95) return "storm";
+    return "partly";
+  }
+
   function startWidget(){
+    var skyTile = document.getElementById("skyTile");
+    skyTile.innerHTML = SKY_SVG.partly;
+
     function tick(){
       var now = new Date();
       var parts = new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"numeric",hour12:false,timeZone:"America/New_York"}).formatToParts(now);
@@ -346,10 +371,7 @@
       handMin.setAttribute("transform", "rotate(" + minDeg + " 20 20)");
 
       var dateStr = now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"});
-      var timeStr = now.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"});
-      widgetText.innerHTML = '<span class="w-emoji">' + (window.__wxEmoji || "🌤") + '</span>' +
-        timeStr + " EST · " + dateStr + (window.__wxTemp ? " · " + window.__wxTemp : "") +
-        '<span class="w-loc">Brooklyn, NY</span>';
+      widgetText.textContent = dateStr + (window.__wxTemp ? " · " + window.__wxTemp : "");
     }
     tick();
     setInterval(tick, 15000);
@@ -360,21 +382,10 @@
         var c = data.current;
         if(!c) return;
         window.__wxTemp = Math.round(c.temperature_2m) + "°F";
-        window.__wxEmoji = weatherEmoji(c.weather_code);
+        skyTile.innerHTML = SKY_SVG[skyCategory(c.weather_code)];
         tick();
       })
       .catch(function(){ /* offline / local preview: skip live weather */ });
-  }
-  function weatherEmoji(code){
-    if(code === 0) return "☀️";
-    if([1,2].indexOf(code) > -1) return "🌤";
-    if(code === 3) return "☁️";
-    if([45,48].indexOf(code) > -1) return "🌫";
-    if(code >= 51 && code <= 67) return "🌧";
-    if(code >= 71 && code <= 77) return "❄️";
-    if(code >= 80 && code <= 82) return "🌦";
-    if(code >= 95) return "⛈";
-    return "🌤";
   }
 
   /* ---------- GALLERY AUTOPLAY-WHEN-CENTERED ---------- */
