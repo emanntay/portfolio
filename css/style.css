@@ -345,6 +345,7 @@ a{color:inherit;}
   gap: 2.25rem;
   overflow-x:auto;
   overflow-y: hidden;
+  overflow-anchor: none;
   scroll-snap-type: x proximity;
   padding-bottom: 0.4rem;
   scrollbar-width: none;
@@ -358,6 +359,7 @@ a{color:inherit;}
   overflow:visible;
   background: transparent;
   scroll-snap-align: start;
+  overflow-anchor: none;
   cursor: pointer;
   position:relative;
   display:flex;
