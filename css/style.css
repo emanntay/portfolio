@@ -10,6 +10,7 @@
   --orange: #dd9c0b;
   --nav-w: 25%;
   --nav-min: 300px;
+  --intro-fade: 150px;
   --serif-head: "Prata", serif;
   --body: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
   --serif-body: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
@@ -240,8 +241,13 @@ a{color:inherit;}
 .intro-overlay{
   position:absolute;
   top:0; left:0; right:0;
-  height:100vh;
-  background: linear-gradient(to bottom, #d8f723 0%, #d8f723 88%, rgba(216,247,35,0) 100%);
+  /* taller than the viewport by --intro-fade: the extra bit at the bottom
+     is where the gradient fades to transparent, and it sits below the
+     fold at rest, so the first frame the user sees is solid green with
+     no fade showing through. The fade band only scrolls into view -- as
+     the trailing edge of the curtain -- once the lift transition starts. */
+  height: calc(100vh + var(--intro-fade));
+  background: linear-gradient(to bottom, #d8f723 0%, #d8f723 calc(100% - var(--intro-fade)), rgba(216,247,35,0) 100%);
   z-index:30;
   pointer-events:none;
   transition: transform 900ms cubic-bezier(.65,0,.35,1);

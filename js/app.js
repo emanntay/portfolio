@@ -546,6 +546,18 @@
     var lastRowDelay = 60 + Math.max(0, rows.length - 1) * 45;
     var holdMs = lastRowDelay + 500; // let the last nav row settle before lifting
     setTimeout(function(){
+      // The curtain is taller than the viewport now (100vh + --intro-fade,
+      // so the fade band starts below the fold and full green shows at
+      // rest). translateY(-100%) therefore travels a bit further than a
+      // plain 100vh lift would -- scale the transition duration by the
+      // same ratio so the curtain still lifts at the original speed
+      // instead of feeling rushed.
+      var baseMs = 900;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var fadePx = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--intro-fade")) || 0;
+      if(vh > 0){
+        introOverlay.style.transitionDuration = Math.round(baseMs * (vh + fadePx) / vh) + "ms";
+      }
       introOverlay.classList.add("lift");
     }, holdMs);
     introOverlay.addEventListener("transitionend", function(){
