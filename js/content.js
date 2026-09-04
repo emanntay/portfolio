@@ -35,12 +35,12 @@ window.SITE = {
           credits: ["Role: Creative Direction + Design", "Video + Stills: Raw Media House", "Production: Katie McGuigan"]
         },
         {
-          slug: "turbotax", title: "TurboTax", mediaKey: "genius-branded-partnerships/turbotax",
+          slug: "turbotax", title: "TurboTax", mediaKey: "genius-branded-partnerships/turbotax", padMedia: 1,
           copy: "With tax season approaching, TurboTax wanted in on the cultural conversation — not with a hard sell, but by showing up where the audience already was. Two moments stood out: Bad Bunny's historic Super Bowl halftime performance, and the kickoff of festival season. Rather than force the brand in, we built it into the format itself — like a \"no sweat round\" inside our Genius on the Streets Trivia video.",
           credits: ["Role: Creative Direction + Design", "Video + Stills: Raw Media House", "Production: Cezanne Panton"]
         },
         {
-          slug: "rabanne-fathers-day", title: "Rabanne Father's Day", mediaKey: "genius-branded-partnerships/rabanne-fathers-day",
+          slug: "rabanne-fathers-day", title: "Rabanne Father's Day", mediaKey: "genius-branded-partnerships/rabanne-fathers-day", padMedia: 2,
           copy: "After several successful holiday seasons with Genius, Rabanne wanted in on another key gifting moment: Father's Day. We created \"With Love,\" a series (since resold) where artists wrap a gift on camera while speaking about a loved one and the lyrics that remind them of that person. The first installment featured Durand Bernarr, and we paired it with a second series spotlighting famous fatherly advice in song lyrics.",
           credits: ["Role: Creative Direction + Design", "Video + Stills: Raw Media House", "Production: Katie McGuigan"]
         },
