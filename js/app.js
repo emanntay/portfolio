@@ -571,8 +571,8 @@
     var ctx = canvas.getContext("2d");
     var COLORS = ["#d8f723", "#d13333", "#c275d3", "#ffc136"]; // green, red, purple, orange
     var CELL = 0.34; // px per pixelated block -- another 10x finer
-    var TRANSITION_MS = 1000; // half a second longer
-    var HOLD_MS = 2000;
+    var TRANSITION_MS = 200; // faster swap between colors
+    var HOLD_MS = 5000; // hold each color longer
     var OTHER_AMP = 0.3; // how much the two non-adjacent colors mix into the noise mid-transition
     var ALPHA = 0.92; // slight blend with the page behind it -- a touch more subtle
     var NOISE_INTERVAL_MS = 32; // throttle the expensive regenerate-and-redraw to ~30fps at this density
