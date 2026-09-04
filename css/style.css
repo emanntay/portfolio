@@ -225,52 +225,33 @@ a{color:inherit;}
 
 /* ---------- RAIL / CONTENT ---------- */
 .rail{
+  position:relative;
   margin-left: max(var(--nav-min), var(--nav-w));
   width: calc(100% - max(var(--nav-min), var(--nav-w)));
   min-height:100vh;
   background: var(--bg);
 }
 
-.landing{
+/* Splash intro: a solid green curtain sits over the first viewport of
+   content while the nav rows waterfall in, then lifts up and out of the
+   way (see initIntro() in app.js). Its own bottom edge fades to
+   transparent so the lift reads as a soft gradient wipe rather than a
+   hard line sliding up. */
+.intro-overlay{
+  position:absolute;
+  top:0; left:0; right:0;
   height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
-  cursor:pointer;
-}
-.landing.hidden{display:none;}
-.landing-pixels{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
-}
-.landing-thumbs{
-  position:absolute;
-  inset:0;
+  background: linear-gradient(to bottom, #d8f723 0%, #d8f723 88%, rgba(216,247,35,0) 100%);
+  z-index:30;
   pointer-events:none;
+  transition: transform 900ms cubic-bezier(.65,0,.35,1);
+  will-change: transform;
 }
-.landing-thumb{
-  position:absolute;
-  max-width:200px;
-  max-height:200px;
-  width:auto;
-  height:auto;
-  object-fit:contain;
-  border-radius:3px;
-  box-shadow: 0 8px 26px rgba(0,0,0,0.35);
-  opacity:0;
-  transition: opacity .45s ease;
-  pointer-events:none;
+.intro-overlay.lift{
+  transform: translateY(-100%);
 }
-.landing-thumb.show{ opacity:1; }
 
-.content{display:none;}
-.content.visible{display:block;}
+.content{display:block;}
 
 .section-block{
   padding: 4.5rem 4vw 2rem 4vw;
