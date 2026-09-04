@@ -54,15 +54,22 @@ a{color:inherit;}
   letter-spacing: -0.03em;
   cursor: pointer;
   line-height: 1.05;
-  animation: nameColorCycle 14s linear infinite;
+  animation: nameColorCycle 14.4s linear infinite;
 }
+/* green -> red -> purple -> orange, each held 3.5s with a snappy 0.1s
+   swap in between (a "hold" is just two identical stops back to back,
+   so linear interpolation between them shows no visible change; the
+   short gap right after is where the fast color swap actually happens) */
 @keyframes nameColorCycle{
-  0%{ color: var(--brown); }
-  20%{ color: var(--chartreuse); }
-  40%{ color: var(--red); }
-  60%{ color: var(--purple); }
-  80%{ color: var(--orange); }
-  100%{ color: var(--brown); }
+  0%{ color: #d8f723; }
+  24.306%{ color: #d8f723; }
+  25%{ color: #d13333; }
+  49.306%{ color: #d13333; }
+  50%{ color: #c275d3; }
+  74.306%{ color: #c275d3; }
+  75%{ color: #ffc136; }
+  99.306%{ color: #ffc136; }
+  100%{ color: #d8f723; }
 }
 
 /* About: fixed to the whole page, top right */
