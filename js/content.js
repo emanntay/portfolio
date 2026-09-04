@@ -3,7 +3,7 @@ window.SITE = {
   about: {
     lead: "Emily is a creative director + designer based in Brooklyn.",
     copy: [
-      "She builds brand partnerships, content, and integrated experiences that are grounded in strategy and generally pretty cool. She takes projects from ideation through execution, moving fluidly between marketing, social, production, and editorial teams. She strives to make work that she'd like to be on the other end of, and create a team rooted in kindness and FUN.",
+      "She builds brand partnerships, content, and integrated experiences that are grounded in strategy, built through collaboration, and generally pretty cool. She takes projects from ideation through execution, moving fluidly between marketing, social, production, and editorial teams. Her main goal is to make work she'd like to be on the other end of.",
       "Emily was born in New Orleans, raised in Houston, and attended the University of Texas at Austin. Her home was featured in a Gestalten book (Home For Now) and Dwell. She's a former dancer, and type B sewer who aspires to get much, much better. She has two young kids who make her world feel big and small all at once."
     ],
     photo: null,
