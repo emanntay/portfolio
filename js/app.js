@@ -570,11 +570,12 @@
     if(!canvas || !canvas.getContext) return null;
     var ctx = canvas.getContext("2d");
     var COLORS = ["#d8f723", "#d13333", "#c275d3", "#ffc136"]; // green, red, purple, orange
-    var CELL = 3.4; // px per pixelated block -- 10x finer than the first pass
+    var CELL = 0.34; // px per pixelated block -- another 10x finer
     var TRANSITION_MS = 1000; // half a second longer
     var HOLD_MS = 2000;
     var OTHER_AMP = 0.3; // how much the two non-adjacent colors mix into the noise mid-transition
     var ALPHA = 0.92; // slight blend with the page behind it -- a touch more subtle
+    var NOISE_INTERVAL_MS = 32; // throttle the expensive regenerate-and-redraw to ~30fps at this density
     var dpr = Math.max(1, window.devicePixelRatio || 1);
     var w = 0, h = 0, cols = 0, rows = 0;
     var colorIndex = 0;
@@ -582,6 +583,8 @@
     var phaseStart = performance.now();
     var raf = null;
     var running = true;
+    var lastNoiseDrawTime = -Infinity;
+    var dataBuf = null; // reused across frames instead of reallocating every draw
 
     // fine pixel density is expensive to draw one fillRect per cell, so instead
     // we compute a tiny cols x rows buffer and let the GPU upscale it (nearest-
@@ -629,7 +632,7 @@
       var rgbFrom = COLOR_RGB[fromIdx], rgbTo = COLOR_RGB[toIdx];
       var rgbOther1 = COLOR_RGB[otherIdx[0]], rgbOther2 = COLOR_RGB[otherIdx[1]];
 
-      var data = new Uint8ClampedArray(cols * rows * 4);
+      var data = dataBuf;
       for(var i = 0, n = cols * rows; i < n; i++){
         var r = Math.random();
         var rgb = r < c1 ? rgbFrom : r < c2 ? rgbTo : r < c3 ? rgbOther1 : rgbOther2;
@@ -656,6 +659,7 @@
       canvas.style.height = h + "px";
       cols = Math.max(1, Math.ceil(w / CELL));
       rows = Math.max(1, Math.ceil(h / CELL));
+      dataBuf = new Uint8ClampedArray(cols * rows * 4);
       if(phase === "hold") drawSolid(toColorHex());
     }
     window.addEventListener("resize", resize);
@@ -666,7 +670,10 @@
       var elapsed = now - phaseStart;
       if(phase === "transition"){
         var t = Math.min(1, elapsed / TRANSITION_MS);
-        drawNoise(t);
+        if(t >= 1 || now - lastNoiseDrawTime >= NOISE_INTERVAL_MS){
+          drawNoise(t);
+          lastNoiseDrawTime = now;
+        }
         if(t >= 1){
           phase = "hold";
           phaseStart = now;
@@ -676,6 +683,7 @@
         colorIndex = (colorIndex + 1) % COLORS.length;
         phase = "transition";
         phaseStart = now;
+        lastNoiseDrawTime = -Infinity; // force an immediate draw at the start of the new transition
       }
       raf = requestAnimationFrame(frame);
     }
@@ -724,8 +732,8 @@
       img.className = "landing-thumb";
       img.src = src;
       img.alt = "";
-      img.style.left = (4 + Math.random() * 84) + "%";
-      img.style.top = (6 + Math.random() * 78) + "%";
+      img.style.left = "50%";
+      img.style.top = "50%";
       var rot = (Math.random() * 10 - 5).toFixed(1);
       img.style.transform = "translate(-50%, -50%) rotate(" + rot + "deg)";
       wrap.appendChild(img);
