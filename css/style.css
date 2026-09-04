@@ -187,7 +187,7 @@ a{color:inherit;}
 }
 .nav-sub-item.active::after{
   height:2.5px;
-  background-color: var(--brown);
+  background-color: var(--nav-accent, var(--brown));
 }
 
 /* palette cycle for section headers, assigned via JS */

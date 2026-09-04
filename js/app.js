@@ -522,20 +522,16 @@
   }
 
   /* ---------- SCROLL-SPY (active nav highlighting) ---------- */
-  var SECTION_HEX_BY_SLUG = {};
-  SITE.sections.forEach(function(sec, si){ SECTION_HEX_BY_SLUG[sec.slug] = SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length]; });
-
   function setActiveNav(sectionSlug, subSlug){
     navList.querySelectorAll(".nav-section-title.active").forEach(function(n){ n.classList.remove("active"); });
-    navList.querySelectorAll(".nav-sub-item.active").forEach(function(n){ n.classList.remove("active"); n.style.borderBottomColor = ""; });
+    navList.querySelectorAll(".nav-sub-item.active").forEach(function(n){ n.classList.remove("active"); });
 
     var titleEl = navList.querySelector('[data-target="sec-' + sectionSlug + '"]');
     if(subSlug){
-      // underline moves down to the subsection; text stays brown, only the underline takes the section's color
+      // underline moves down to the subsection; text stays brown, only the underline (--nav-accent, set per-item in renderNav) takes the section's color
       var subEl = navList.querySelector('[data-target="sub-' + sectionSlug + '-' + subSlug + '"]');
       if(subEl){
         subEl.classList.add("active");
-        subEl.style.borderBottomColor = SECTION_HEX_BY_SLUG[sectionSlug] || "";
       }
     } else if(titleEl){
       titleEl.classList.add("active");
