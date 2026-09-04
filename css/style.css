@@ -42,15 +42,7 @@ a{color:inherit;}
   display:block;
   padding: 1.5rem 1.5rem 1.5rem;
   z-index: 40;
-  transition: width .5s ease;
 }
-/* Intro: before the first click/tap, blow the nav (and its underline rows,
-   which are just 100% width of it) out to ~3/4 of the page. This --nav-w
-   override is scoped to .nav itself, so .rail (a sibling) doesn't inherit
-   it and stays put at its normal position -- the widened nav simply paints
-   on top of the first stretch of it (nav is z-index 40; see landing-thumbs
-   below, at z-index 45, for how the random thumbnails land above both). */
-body.pre-reveal .nav{ --nav-w: 75%; }
 .corner{display:flex;align-items:center;}
 .corner-tl{position:absolute; top:1.5rem; left:1.5rem; right:1.5rem;}
 .corner-bl{position:absolute; bottom:1.4rem; left:1.5rem; right:1.5rem;}
@@ -248,30 +240,18 @@ body.pre-reveal .nav{ --nav-w: 75%; }
   position:relative;
   overflow:hidden;
   cursor:pointer;
-  animation: landingBgCycle 22s linear infinite;
 }
 .landing.hidden{display:none;}
-/* green -> red -> purple -> orange, each held 5s with a quick 0.5s crossfade
-   in between (a "hold" is just two identical stops back to back, so linear
-   interpolation between them shows no visible change) */
-@keyframes landingBgCycle{
-  0%{ background-color: #d8f723; }
-  22.727%{ background-color: #d8f723; }
-  25%{ background-color: #d13333; }
-  47.727%{ background-color: #d13333; }
-  50%{ background-color: #c275d3; }
-  72.727%{ background-color: #c275d3; }
-  75%{ background-color: #ffc136; }
-  97.727%{ background-color: #ffc136; }
-  100%{ background-color: #d8f723; }
-}
-/* Fixed (not confined to .landing's own box) so the randomly placed
-   thumbnails can land anywhere across the page, including on top of the
-   widened nav's lines, above the nav's z-index so they render over them. */
-.landing-thumbs{
-  position:fixed;
+.landing-pixels{
+  position:absolute;
   inset:0;
-  z-index:45;
+  width:100%;
+  height:100%;
+  display:block;
+}
+.landing-thumbs{
+  position:absolute;
+  inset:0;
   pointer-events:none;
 }
 .landing-thumb{

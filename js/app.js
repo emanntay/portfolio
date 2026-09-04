@@ -86,7 +86,6 @@
     hasRevealed = true;
     landingEl.classList.add("hidden");
     contentEl.classList.add("visible");
-    document.body.classList.remove("pre-reveal");
     if(landingAnim){ landingAnim.stop(); landingAnim = null; }
   }
 
@@ -551,16 +550,150 @@
     document.querySelectorAll(".section-block").forEach(function(b){ observer.observe(b); });
   }
 
-  /* ---------- LANDING ANIMATION: random work thumbnails over the widened nav ----------
-     The color cycle itself is now pure CSS (landingBgCycle on .landing in
-     style.css) -- this just handles the random thumbnails, which are
-     position:fixed over the whole page (see .landing-thumbs in style.css)
-     so they can land on top of the nav while it's blown out to ~3/4 width. */
+  /* ---------- LANDING ANIMATION: pixelated color cycle + random work thumbnails ----------
+     Experimental -- easy to revert: this whole block, its two DOM hooks in
+     index.html (#landingPixels, #landingThumbs), and the .landing-pixels /
+     .landing-thumbs* rules in style.css were all added in one commit. */
   function startLandingAnimation(){
+    var pixelCtrl = initLandingPixels();
     var thumbCtrl = initLandingThumbs();
     return {
       stop: function(){
+        if(pixelCtrl) pixelCtrl.stop();
         if(thumbCtrl) thumbCtrl.stop();
+      }
+    };
+  }
+
+  function initLandingPixels(){
+    var canvas = document.getElementById("landingPixels");
+    if(!canvas || !canvas.getContext) return null;
+    var ctx = canvas.getContext("2d");
+    var COLORS = ["#d8f723", "#d13333", "#c275d3", "#ffc136"]; // green, red, purple, orange
+    var CELL = 0.34; // px per pixelated block -- another 10x finer
+    var TRANSITION_MS = 500; // swap between colors
+    var HOLD_MS = 5000; // hold each color longer
+    var OTHER_AMP = 0.3; // how much the two non-adjacent colors mix into the noise mid-transition
+    var ALPHA = 0.92; // slight blend with the page behind it -- a touch more subtle
+    var NOISE_INTERVAL_MS = 32; // throttle the expensive regenerate-and-redraw to ~30fps at this density
+    var dpr = Math.max(1, window.devicePixelRatio || 1);
+    var w = 0, h = 0, cols = 0, rows = 0;
+    var colorIndex = 0;
+    var phase = "transition";
+    var phaseStart = performance.now();
+    var raf = null;
+    var running = true;
+    var lastNoiseDrawTime = -Infinity;
+    var dataBuf = null; // reused across frames instead of reallocating every draw
+
+    // fine pixel density is expensive to draw one fillRect per cell, so instead
+    // we compute a tiny cols x rows buffer and let the GPU upscale it (nearest-
+    // neighbor, so it stays crisply blocky) onto the visible canvas each frame
+    var buffer = document.createElement("canvas");
+    var bctx = buffer.getContext("2d");
+
+    function hexToRGB(hex){
+      var v = parseInt(hex.slice(1), 16);
+      return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+    }
+    var COLOR_RGB = COLORS.map(hexToRGB);
+
+    function toColorHex(){ return COLORS[colorIndex]; }
+    // slow at both ends, fast in the middle -- so the tails of the transition
+    // stay mostly the color it's coming from / going to, as requested
+    function smoothstep(t){ return t * t * (3 - 2 * t); }
+
+    function drawSolid(hex){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = ALPHA;
+      ctx.fillStyle = hex;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 1;
+    }
+
+    function drawNoise(t){
+      if(cols < 1 || rows < 1) return;
+      var fromIdx = (colorIndex - 1 + COLORS.length) % COLORS.length;
+      var toIdx = colorIndex;
+      var otherIdx = [];
+      for(var i = 0; i < COLORS.length; i++){ if(i !== fromIdx && i !== toIdx) otherIdx.push(i); }
+
+      // weighted mix across all four colors: from/to dominate the tails (one of
+      // them is 100% right at t=0 / t=1), the other two colors bump in only
+      // through the middle of the transition so every color gets used without
+      // disturbing the gradual from->to read
+      var s = smoothstep(t);
+      var bump = Math.sin(Math.PI * t) * OTHER_AMP;
+      var wFrom = (1 - s) * (1 - bump);
+      var wTo = s * (1 - bump);
+      var wOther = bump / 2;
+      var c1 = wFrom, c2 = c1 + wTo, c3 = c2 + wOther; // remainder (to 1) is the 4th bucket
+
+      var rgbFrom = COLOR_RGB[fromIdx], rgbTo = COLOR_RGB[toIdx];
+      var rgbOther1 = COLOR_RGB[otherIdx[0]], rgbOther2 = COLOR_RGB[otherIdx[1]];
+
+      var data = dataBuf;
+      for(var i = 0, n = cols * rows; i < n; i++){
+        var r = Math.random();
+        var rgb = r < c1 ? rgbFrom : r < c2 ? rgbTo : r < c3 ? rgbOther1 : rgbOther2;
+        var o = i * 4;
+        data[o] = rgb[0]; data[o + 1] = rgb[1]; data[o + 2] = rgb[2]; data[o + 3] = 255;
+      }
+      buffer.width = cols; buffer.height = rows;
+      bctx.putImageData(new ImageData(data, cols, rows), 0, 0);
+
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = ALPHA;
+      ctx.drawImage(buffer, 0, 0, cols, rows, 0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 1;
+    }
+
+    function resize(){
+      var rect = canvas.parentElement.getBoundingClientRect();
+      w = Math.max(1, Math.round(rect.width));
+      h = Math.max(1, Math.round(rect.height));
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      cols = Math.max(1, Math.ceil(w / CELL));
+      rows = Math.max(1, Math.ceil(h / CELL));
+      dataBuf = new Uint8ClampedArray(cols * rows * 4);
+      if(phase === "hold") drawSolid(toColorHex());
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function frame(now){
+      if(!running) return;
+      var elapsed = now - phaseStart;
+      if(phase === "transition"){
+        var t = Math.min(1, elapsed / TRANSITION_MS);
+        if(t >= 1 || now - lastNoiseDrawTime >= NOISE_INTERVAL_MS){
+          drawNoise(t);
+          lastNoiseDrawTime = now;
+        }
+        if(t >= 1){
+          phase = "hold";
+          phaseStart = now;
+          drawSolid(toColorHex());
+        }
+      } else if(elapsed >= HOLD_MS){
+        colorIndex = (colorIndex + 1) % COLORS.length;
+        phase = "transition";
+        phaseStart = now;
+        lastNoiseDrawTime = -Infinity; // force an immediate draw at the start of the new transition
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+
+    return {
+      stop: function(){
+        running = false;
+        if(raf) cancelAnimationFrame(raf);
+        window.removeEventListener("resize", resize);
       }
     };
   }
@@ -599,8 +732,8 @@
       img.className = "landing-thumb";
       img.src = src;
       img.alt = "";
-      img.style.left = (4 + Math.random() * 84) + "%";
-      img.style.top = (6 + Math.random() * 78) + "%";
+      img.style.left = "50%";
+      img.style.top = "50%";
       var rot = (Math.random() * 10 - 5).toFixed(1);
       img.style.transform = "translate(-50%, -50%) rotate(" + rot + "deg)";
       wrap.appendChild(img);
