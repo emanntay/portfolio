@@ -29,6 +29,7 @@
   var hasRevealed = false;
   var currentGalleryItems = null;
   var currentGalleryIndex = 0;
+  var landingAnim = null;
 
   /* ---------- helpers ---------- */
   function mediaFor(key){ return MANIFEST[key] || []; }
@@ -85,6 +86,7 @@
     hasRevealed = true;
     landingEl.classList.add("hidden");
     contentEl.classList.add("visible");
+    if(landingAnim){ landingAnim.stop(); landingAnim = null; }
   }
 
   /* ---------- CONTENT RENDER ---------- */
@@ -548,6 +550,166 @@
     document.querySelectorAll(".section-block").forEach(function(b){ observer.observe(b); });
   }
 
+  /* ---------- LANDING ANIMATION: pixelated color cycle + random work thumbnails ----------
+     Experimental -- easy to revert: this whole block, its two DOM hooks in
+     index.html (#landingPixels, #landingThumbs), and the .landing-pixels /
+     .landing-thumbs* rules in style.css were all added in one commit. */
+  function startLandingAnimation(){
+    var pixelCtrl = initLandingPixels();
+    var thumbCtrl = initLandingThumbs();
+    return {
+      stop: function(){
+        if(pixelCtrl) pixelCtrl.stop();
+        if(thumbCtrl) thumbCtrl.stop();
+      }
+    };
+  }
+
+  function initLandingPixels(){
+    var canvas = document.getElementById("landingPixels");
+    if(!canvas || !canvas.getContext) return null;
+    var ctx = canvas.getContext("2d");
+    var COLORS = ["#d8f723", "#d13333", "#c275d3", "#ffc136"]; // green, red, purple, orange
+    var CELL = 34; // px per pixelated block
+    var TRANSITION_MS = 500;
+    var HOLD_MS = 2000;
+    var dpr = Math.max(1, window.devicePixelRatio || 1);
+    var w = 0, h = 0, cols = 0, rows = 0;
+    var colorIndex = 0;
+    var phase = "transition";
+    var phaseStart = performance.now();
+    var raf = null;
+    var running = true;
+
+    function fromColor(){ return COLORS[(colorIndex - 1 + COLORS.length) % COLORS.length]; }
+    function toColor(){ return COLORS[colorIndex]; }
+    // slow at both ends, fast in the middle -- so the tails of the transition
+    // stay mostly the color it's coming from / going to, as requested
+    function smoothstep(t){ return t * t * (3 - 2 * t); }
+
+    function drawSolid(color){
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, w, h);
+    }
+    function drawNoise(p){
+      var from = fromColor(), to = toColor();
+      for(var r = 0; r < rows; r++){
+        for(var c = 0; c < cols; c++){
+          ctx.fillStyle = Math.random() < p ? to : from;
+          ctx.fillRect(c * CELL, r * CELL, CELL, CELL);
+        }
+      }
+    }
+
+    function resize(){
+      var rect = canvas.parentElement.getBoundingClientRect();
+      w = Math.max(1, Math.round(rect.width));
+      h = Math.max(1, Math.round(rect.height));
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.ceil(w / CELL) + 1;
+      rows = Math.ceil(h / CELL) + 1;
+      if(phase === "hold") drawSolid(toColor());
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function frame(now){
+      if(!running) return;
+      var elapsed = now - phaseStart;
+      if(phase === "transition"){
+        var t = Math.min(1, elapsed / TRANSITION_MS);
+        drawNoise(smoothstep(t));
+        if(t >= 1){
+          phase = "hold";
+          phaseStart = now;
+          drawSolid(toColor());
+        }
+      } else if(elapsed >= HOLD_MS){
+        colorIndex = (colorIndex + 1) % COLORS.length;
+        phase = "transition";
+        phaseStart = now;
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+
+    return {
+      stop: function(){
+        running = false;
+        if(raf) cancelAnimationFrame(raf);
+        window.removeEventListener("resize", resize);
+      }
+    };
+  }
+
+  function initLandingThumbs(){
+    var wrap = document.getElementById("landingThumbs");
+    if(!wrap) return null;
+    var pool = [];
+    Object.keys(MANIFEST).forEach(function(key){
+      (MANIFEST[key] || []).forEach(function(item){
+        var src = item.type === "image" ? item.src : item.poster;
+        if(src) pool.push(src);
+      });
+    });
+    if(pool.length === 0) return null;
+
+    var lastSrc = null;
+    var currentThumb = null;
+    var timer = null;
+    var running = true;
+
+    function pickSrc(){
+      var src, guard = 0;
+      do {
+        src = pool[Math.floor(Math.random() * pool.length)];
+        guard++;
+      } while(src === lastSrc && pool.length > 1 && guard < 8);
+      lastSrc = src;
+      return src;
+    }
+
+    function spawn(){
+      if(!running) return;
+      var src = pickSrc();
+      var img = document.createElement("img");
+      img.className = "landing-thumb";
+      img.src = src;
+      img.alt = "";
+      img.style.left = (4 + Math.random() * 84) + "%";
+      img.style.top = (6 + Math.random() * 78) + "%";
+      var rot = (Math.random() * 10 - 5).toFixed(1);
+      img.style.transform = "translate(-50%, -50%) rotate(" + rot + "deg)";
+      wrap.appendChild(img);
+
+      var prevThumb = currentThumb;
+      currentThumb = img;
+      requestAnimationFrame(function(){ img.classList.add("show"); });
+
+      if(prevThumb){
+        prevThumb.classList.remove("show");
+        setTimeout(function(){
+          if(prevThumb.parentNode) prevThumb.parentNode.removeChild(prevThumb);
+        }, 450);
+      }
+    }
+
+    spawn();
+    timer = setInterval(spawn, 1000);
+
+    return {
+      stop: function(){
+        running = false;
+        if(timer) clearInterval(timer);
+        wrap.innerHTML = "";
+      }
+    };
+  }
+
   /* ---------- LANDING: click takes you into the first section ---------- */
   function wireLanding(){
     var firstId = "sec-" + SITE.sections[0].slug;
@@ -577,5 +739,6 @@
   initScrollSpy();
   wireLanding();
   wireSiteName();
+  landingAnim = startLandingAnimation();
   requestAnimationFrame(galleryLoop);
 })();
