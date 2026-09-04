@@ -3,7 +3,7 @@
   var SITE = window.SITE;
   var MANIFEST = window.MANIFEST || {};
   var SECTION_ACCENT_CLASSES = ["accent-red","accent-chartreuse","accent-purple","accent-orange"];
-  var SECTION_ACCENT_HEX = ["#d13333","#bfea0a","#c275d3","#ffc136"];
+  var SECTION_ACCENT_HEX = ["#d13333","#0086ff","#c275d3","#dd9c0b"];
 
   var navList = document.getElementById("navList");
   var contentEl = document.getElementById("content");
@@ -43,7 +43,7 @@
   function renderNav(){
     SITE.sections.forEach(function(sec, si){
       var wrap = el("div","nav-section");
-      var title = el("button","nav-section-title " + SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length], sec.title);
+      var title = el("button","nav-section-title " + SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length], sec.navTitle || sec.title);
       title.dataset.target = "sec-" + sec.slug;
       wrap.appendChild(title);
 
@@ -124,7 +124,7 @@
           subBlock.appendChild(buildEmbedGallery(sub.embedUrls, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length], SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length]));
         } else {
           var items = mediaFor(sub.mediaKey);
-          subBlock.appendChild(buildGallery(items, sub.mediaKey, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length], SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length]));
+          subBlock.appendChild(buildGallery(items, sub.mediaKey, SECTION_ACCENT_HEX[si % SECTION_ACCENT_HEX.length], SECTION_ACCENT_CLASSES[si % SECTION_ACCENT_CLASSES.length], sub.padMedia));
         }
         contentEl.appendChild(subBlock);
       });
@@ -233,7 +233,7 @@
     wrap.appendChild(prev); wrap.appendChild(next);
   }
 
-  function buildGallery(items, key, accent, accentClass){
+  function buildGallery(items, key, accent, accentClass, padMedia){
     var wrap = el("div","gallery-wrap" + (accentClass ? " " + accentClass : ""));
     wrap.style.setProperty("--nav-accent", accent || "#543923");
 
@@ -243,6 +243,8 @@
     items.forEach(function(item, idx){
       var cell = el("div","gallery-item");
       cell.dataset.idx = idx;
+      var shouldPad = padMedia && item.type === "image" && (padMedia === "all" || idx < padMedia);
+      if(shouldPad) cell.classList.add("media-padded");
       var media = buildMedia(item, {sound:false});
       cell.appendChild(media);
       if(item.type === "video"){
@@ -254,6 +256,20 @@
         });
         cell.appendChild(badge);
 
+        var pauseBtn = el("button","pause-badge", PAUSE_SVG);
+        pauseBtn.setAttribute("aria-label","Play or pause");
+        pauseBtn.addEventListener("click", function(e){
+          e.stopPropagation();
+          if(media.paused){
+            delete cell.dataset.userPaused;
+            media.play().catch(function(){});
+          } else {
+            cell.dataset.userPaused = "1";
+            media.pause();
+          }
+        });
+        cell.appendChild(pauseBtn);
+
         var progress = el("div","video-progress");
         var progressBar = el("div","video-progress-bar");
         progress.appendChild(progressBar);
@@ -263,8 +279,8 @@
         playOverlay.appendChild(el("div","play-overlay-icon", PLAY_SVG));
         cell.appendChild(playOverlay);
 
-        media.addEventListener("play", function(){ cell.classList.add("is-playing"); });
-        media.addEventListener("pause", function(){ cell.classList.remove("is-playing"); });
+        media.addEventListener("play", function(){ cell.classList.add("is-playing"); pauseBtn.innerHTML = PAUSE_SVG; });
+        media.addEventListener("pause", function(){ cell.classList.remove("is-playing"); pauseBtn.innerHTML = PLAY_SVG; });
         media.addEventListener("timeupdate", function(){
           if(media.duration){ progressBar.style.width = (media.currentTime/media.duration*100) + "%"; }
         });
@@ -493,10 +509,11 @@
       items.forEach(function(cell){
         var v = cell.querySelector("video");
         if(!v) return;
-        var shouldPlay = galleryVisible && cell === best && bestDist < threshold;
+        var userPaused = cell.dataset.userPaused === "1";
+        var shouldPlay = galleryVisible && cell === best && bestDist < threshold && !userPaused;
         if(shouldPlay){
           if(v.paused){ v.play().catch(function(){}); }
-        } else if(!v.paused){
+        } else if(!v.paused && !userPaused){
           v.pause();
         }
       });

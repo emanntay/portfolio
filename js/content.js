@@ -14,17 +14,18 @@ window.SITE = {
     {
       slug: "genius-branded-partnerships",
       title: "Genius Branded Partnerships",
+      navTitle: "Genius Brand Partnerships",
       intro: "At Genius, branded content starts with music knowledge and artists' stories, and the brand's message gets built into that story, not bolted onto it. Sometimes that means leaning on a series that's already built cachet, other times the idea calls for something entirely custom. Either way, we pull from video, social, editorial, and digital to bring the narrative to life across however many touchpoints the story needs.",
       heroKey: "_hero-genius-branded-partnerships",
       heroSound: true,
       subsections: [
         {
-          slug: "jordan", title: "Jordan", mediaKey: "genius-branded-partnerships/jordan",
+          slug: "jordan", title: "Jordan Brand", mediaKey: "genius-branded-partnerships/jordan",
           copy: "To mark Air Jordan's 40th anniversary, Jordan Brand revisited its origin story: when Michael Jordan first laced up the shoes, the NBA fined him $5,000 every time he wore them on court. The campaign asked a simple question — what if that fine was never paid? Jordan brought in Genius to explore the answer through music: the artists, songs, and culture the shoe helped shape. We kicked things off with a stunt on our own site, \"banning\" lyrics that referenced Jordan, his sneakers, or any artist affiliated with the brand. From there, we assembled a panel of cultural experts to dig into the music the AJ1 inspired — and to imagine what music would look like if it never existed.",
           credits: ["Role: Creative Direction + Design", "AD: Alex Cheung", "Sr. Designer: David Sealey", "Production: Katie McGuigan", "Videos: Raw Media House"]
         },
         {
-          slug: "brisk", title: "Brisk", mediaKey: "genius-branded-partnerships/brisk",
+          slug: "brisk", title: "Brisk x Doja", mediaKey: "genius-branded-partnerships/brisk",
           copy: "Brisk revived its iconic '90s \"That's Cold\" claymation campaign for a new generation, tapping Doja Cat to front it. Genius was brought in to extend her presence beyond the TV spot and give her a life inside our world. We sat a claymated Doja down in front of Genius' iconic yellow Verified backdrop for \"Cold Takes\" — a playful riff on our flagship interview franchise, built around questions like \"what's the coldest lyric you've ever written?\"",
           credits: ["Role: Creative Direction + Design", "Production: Katie McGuigan", "Animation: Hornet"]
         },
@@ -40,7 +41,7 @@ window.SITE = {
         },
         {
           slug: "rabanne-fathers-day", title: "Rabanne Father's Day", mediaKey: "genius-branded-partnerships/rabanne-fathers-day",
-          copy: "After several successful holiday seasons with Genius, Rabanne wanted in on another key gifting moment: Father's Day. We created \"With Love,\" a series (since resold) where artists wrap a gift on camera while speaking about a loved one and the lyrics that remind them of that person. The first installment featured Durand Bernarr, a charismatic, magnetic emerging artist. We paired it with a second series spotlighting famous fatherly advice in song lyrics.",
+          copy: "After several successful holiday seasons with Genius, Rabanne wanted in on another key gifting moment: Father's Day. We created \"With Love,\" a series (since resold) where artists wrap a gift on camera while speaking about a loved one and the lyrics that remind them of that person. The first installment featured Durand Bernarr, and we paired it with a second series spotlighting famous fatherly advice in song lyrics.",
           credits: ["Role: Creative Direction + Design", "Video + Stills: Raw Media House", "Production: Katie McGuigan"]
         },
         {
@@ -53,19 +54,19 @@ window.SITE = {
     {
       slug: "genius-brand",
       title: "Genius Brand",
-      intro: "Beyond individual campaigns, I supported Genius across the business, from editorial and social to marketing strategy. That meant building visual systems for teams outside of design to use on their own, shaping sub brands from the ground up, and helping shape how we positioned ourselves in market.",
+      intro: "Beyond individual campaigns, I supported Genius across the business, from editorial and social to marketing strategy. That meant building visual systems for teams outside of design to use on their own, shaping sub brands from the ground up, and strategizing how we positioned ourselves in market.",
       heroKey: "_hero-genius-brand",
       heroSound: false,
       subsections: [
         {
-          slug: "editorial", title: "Editorial", mediaKey: "genius-brand/editorial",
-          copy: "As the Genius editorial team publishes new pieces on Genius.com, design brings those stories to life visually. That can mean artist interviews, think pieces on genres or trends, or coverage of a cultural moment as it's happening. We make complex ideas instantly graspable, building a little world around each story to keep the homepage feeling alive. Here are a few stories I have a lot of heart for.",
+          slug: "editorial", title: "Editorial", mediaKey: "genius-brand/editorial", padMedia: "all",
+          copy: "As the Genius editorial team publishes new pieces on Genius.com, design brings those stories to life visually. That can mean artist interviews, think pieces on genres or trends, or coverage of a cultural moment as it's happening. We give complex ideas shape, building a little world around each story to keep the homepage feeling alive. Here are a few stories I have a lot of heart for.",
           credits: ["Role: Creative Direction + Design"]
         },
         {
           slug: "social-toolkit", title: "Social Toolkit", embeds: true,
-          copy: "Our social team moves quickly, reacting in real time to breaking news, new music, and live events. Our challenge was to build a system that was nimble, hard-hitting in the feed, and still unmistakably \"us.\" It needed to work outside the design team without losing any polish. So we built a toolkit they could rework to tell whatever story they wanted, a living, breathing system we can keep iterating on as new needs and ideas arise.",
-          credits: ["Role: Creative Direction + Design", "Art Direction: Alex Cheung"],
+          copy: "Our social team moves quickly, reacting in real time to breaking news, new music, and live events. Our challenge was to build a system that was nimble, hard-hitting in the feed, and still unmistakably \"us.\" It needed to work outside the design team without losing any polish. So we built a flexible, modular toolkit they could rework to tell whatever story they wanted, a living, breathing system we can keep iterating on as new needs and ideas arise.",
+          credits: ["Role: Creative Direction + Design", "Art Direction: Alex Cheung", "Social Creative Director: Cam Johnson"],
           embedUrls: [
             "https://www.instagram.com/p/DW42YGqD8Lh/?img_index=1",
             "https://www.instagram.com/genius/reel/DbeR35aDaZq/",
@@ -101,13 +102,13 @@ window.SITE = {
           ]
         },
         {
-          slug: "community", title: "Community", mediaKey: "genius-brand/community",
+          slug: "community", title: "Community", mediaKey: "genius-brand/community", padMedia: 2,
           copy: "Two things make Genius unique: the depth of our data and music knowledge, and the passionate community that fuels so much of it. Here are a few times we gave that community a platform of their own, and recognized their role as the heartbeat of Genius.",
           credits: ["Role: Creative Direction + Design"]
         },
         {
           slug: "music-iq", title: "Music IQ", mediaKey: "genius-brand/music-iq",
-          copy: "With the largest lyrics and music knowledge database at our fingertips, we wanted to turn that into actionable insight for our partners and a real seat in the cultural conversation. So we created a sub brand, Music IQ. Alongside it, we built a graphic design language of its own, one that captured both the art and the science behind the data.",
+          copy: "With the largest lyrics and music knowledge database at our fingertips, we wanted to turn that into actionable insight for our partners. So we created a sub brand, Music IQ. Alongside it, we built a graphic design language of its own, one that captured both the art and the science behind the data.",
           credits: ["Role: Creative Direction + Design"]
         },
         {
@@ -141,7 +142,7 @@ window.SITE = {
         },
         {
           slug: "iqbbq-brand-partners", title: "Brand Partners", mediaKey: "iqbbq-50th/iqbbq-brand-partners",
-          copy: "Rabanne: The So Fresh, So Clean Shop offered guests free shoe shines and shape-ups.\n\nShowtime's THE CHI: The Rap Cafeteria featured tables that represented different eras and scenes in hip-hop.\n\nINFINITI: Partnered with artist Jade Purple Brown to pay homage to women in hip-hop.\n\nPatrón EL ALTO: Created a premium VIP lounge with a focus on cocktails.",
+          copy: "<strong>Rabanne</strong>: The So Fresh, So Clean Shop offered guests free shoe shines and shape-ups.\n<strong>Showtime's THE CHI</strong>: The Rap Cafeteria featured tables that represented different eras and scenes in hip-hop.\n<strong>INFINITI</strong>: Partnered with artist Jade Purple Brown to pay homage to women in hip-hop.\n<strong>Patrón EL ALTO</strong>: Created a premium VIP lounge with a focus on cocktails.",
           credits: ["Role: Creative Direction", "Experiential Partner: Superfly"]
         },
         {
@@ -154,7 +155,7 @@ window.SITE = {
     {
       slug: "adidas-women-nyc",
       title: "adidas women NYC",
-      intro: "adidas Women NYC is a women-first collective brought together by sport, wellness, and culture. We built local partnerships, working with fitness studios, artists, and entrepreneurs, to give the community unique, elevated, and approachable experiences. Here's a few that I creatively led and produced.",
+      intro: "adidas Women NYC is a women-first collective brought together by sport, wellness, and culture. We built local partnerships, working with fitness studios, artists, and entrepreneurs, to give the community unique, elevated, and approachable experiences. Here's a few that I creatively led and helped execute.",
       heroKey: "_hero-adidas-women-nyc",
       heroSound: false,
       subsections: [
