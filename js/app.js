@@ -556,9 +556,15 @@
       var vh = window.innerHeight || document.documentElement.clientHeight;
       var fadePx = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--intro-fade")) || 0;
       if(vh > 0){
-        introOverlay.style.transitionDuration = Math.round(baseMs * (vh + fadePx) / vh) + "ms";
+        // content shares this exact duration (and the exact same travel
+        // distance, baked into its CSS translateY) so it moves in lockstep
+        // with the curtain instead of just being uncovered by it
+        var scaledMs = Math.round(baseMs * (vh + fadePx) / vh) + "ms";
+        introOverlay.style.transitionDuration = scaledMs;
+        contentEl.style.transitionDuration = scaledMs;
       }
       introOverlay.classList.add("lift");
+      contentEl.classList.add("lift");
     }, holdMs);
     introOverlay.addEventListener("transitionend", function(){
       if(introOverlay.parentNode) introOverlay.parentNode.removeChild(introOverlay);

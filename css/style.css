@@ -257,7 +257,15 @@ a{color:inherit;}
   transform: translateY(-100%);
 }
 
-.content{display:block;}
+.content{
+  display:block;
+  transform: translateY(calc(100vh + var(--intro-fade)));
+  transition: transform 900ms cubic-bezier(.65,0,.35,1);
+  will-change: transform;
+}
+.content.lift{
+  transform: translateY(0);
+}
 
 .section-block{
   padding: 4.5rem 4vw 2rem 4vw;
