@@ -73,6 +73,7 @@ window.SITE = {
             "https://www.instagram.com/p/DZV3yFuiIJG/?img_index=1",
             "https://www.instagram.com/p/DQC26MMkoHR/",
             "https://www.instagram.com/genius/p/DZnTlTlm-vH/?img_index=1",
+            "https://www.instagram.com/p/Dc4MpkIgRuk/?img_index=2",
             "https://www.instagram.com/p/Db3mcvckQJs/",
             "https://www.instagram.com/p/DcP2rcMm_vy/?img_index=1",
             "https://www.instagram.com/p/DU6O-pYASkS/?img_index=1",
