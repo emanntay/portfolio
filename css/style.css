@@ -608,4 +608,12 @@ a{color:inherit;}
      down to fit entirely in view instead of getting clipped by the
      gallery's overflow. */
   .gallery-item img, .gallery-item video{ max-height: 320px; }
+
+  /* Instagram embeds have their own fixed intrinsic height (set by
+     Instagram's embed script, not by us) that's usually well over
+     320px -- forcing them into the same fixed-height box as the media
+     galleries just clips them. Let embed cells size to their natural
+     height instead, same as they already do on desktop, so the
+     surrounding gallery grows to match instead of cropping them. */
+  .gallery-item.embed-item{ height: auto; }
 }
