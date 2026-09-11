@@ -8,7 +8,7 @@ window.SITE = {
     ],
     photo: null,
     linkedin: "https://www.linkedin.com/in/emily-taylor-75230129/",
-    email: "" // TODO: fill in real email address -- mailto link is blank until this is set
+    email: "emanntay@gmail.com"
   },
   sections: [
     {
@@ -71,6 +71,7 @@ window.SITE = {
             "https://www.instagram.com/p/DW42YGqD8Lh/?img_index=1",
             "https://www.instagram.com/genius/reel/DbeR35aDaZq/",
             "https://www.instagram.com/p/DZV3yFuiIJG/?img_index=1",
+            "https://www.instagram.com/genius/p/DdEUXiGHP9L/",
             "https://www.instagram.com/p/DQC26MMkoHR/",
             "https://www.instagram.com/genius/p/DZnTlTlm-vH/?img_index=1",
             "https://www.instagram.com/p/Dc4MpkIgRuk/?img_index=2",
@@ -99,6 +100,7 @@ window.SITE = {
             "https://www.instagram.com/genius/p/DUPS68XjF6_/",
             "https://www.instagram.com/genius/p/DUPPOeKEQxI/",
             "https://www.instagram.com/genius/p/DUPMnyHjJfH/",
+            "https://www.instagram.com/p/DdFSVUjCSi7/",
             "https://www.instagram.com/p/DUPZZfcjLrB/"
           ]
         },

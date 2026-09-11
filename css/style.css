@@ -58,6 +58,12 @@ a{color:inherit;}
   color: var(--brown);
 }
 
+/* Mobile-only header echo of the site name: the real nav (with its own
+   "Emily Taylor") lives off-canvas until the hamburger opens it, so on
+   mobile we surface a plain, non-fixed copy at the top of the page --
+   it scrolls away with the rest of the content, no anchoring needed. */
+.mobile-site-name{ display:none; }
+
 /* About: fixed to the whole page, top right */
 .about-fixed{
   position: fixed;
@@ -581,5 +587,24 @@ a{color:inherit;}
   .rail{ margin-left:0; width:100%; }
   .about-fixed{ right: 4.4rem; }
   .about-panel{ left: 0; }
+
+  .mobile-site-name{
+    display:block;
+    position:relative;
+    z-index: 31; /* above the intro curtain, so it reads immediately */
+    padding: 1.15rem 5rem 0.5rem 1.2rem;
+    font-family: var(--serif-head);
+    font-weight: 800;
+    font-size: clamp(1.3rem, 5vw, 1.7rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--brown);
+    cursor: pointer;
+  }
+
   .gallery-item{ height: 320px; }
+  /* Cap media to the item's own height so tall (portrait) videos scale
+     down to fit entirely in view instead of getting clipped by the
+     gallery's overflow. */
+  .gallery-item img, .gallery-item video{ max-height: 320px; }
 }

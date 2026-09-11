@@ -574,13 +574,15 @@
 
   /* ---------- SITE NAME: click to jump to top ---------- */
   function wireSiteName(){
-    var siteNameEl = document.getElementById("siteName");
-    if(!siteNameEl) return;
-    siteNameEl.addEventListener("click", function(){
-      window.scrollTo({top:0, behavior:"smooth"});
-    });
-    siteNameEl.addEventListener("keydown", function(e){
-      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); window.scrollTo({top:0, behavior:"smooth"}); }
+    ["siteName", "mobileSiteName"].forEach(function(id){
+      var siteNameEl = document.getElementById(id);
+      if(!siteNameEl) return;
+      siteNameEl.addEventListener("click", function(){
+        window.scrollTo({top:0, behavior:"smooth"});
+      });
+      siteNameEl.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); window.scrollTo({top:0, behavior:"smooth"}); }
+      });
     });
   }
 
