@@ -8,6 +8,7 @@
   --red: #d13333;
   --purple: #c275d3;
   --orange: #dd9c0b;
+  --favicon-yellow: #d0f800; /* matches assets/favicon.png */
   --nav-w: 25%;
   --nav-min: 300px;
   --intro-fade: 150px;
@@ -505,7 +506,7 @@ a{color:inherit;}
 .about-lead{
   font-family: var(--serif-head);
   font-weight: 800;
-  color: var(--chartreuse);
+  color: var(--favicon-yellow);
   font-size: clamp(1.25rem, 2.3vw, 1.7rem);
   letter-spacing: -0.03em;
   line-height: 1.35;
